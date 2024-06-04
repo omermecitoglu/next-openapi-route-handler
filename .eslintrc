@@ -1,0 +1,12 @@
+{
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": ["./tsconfig.json"]
+  },
+  "extends": [
+    "@omer-x/eslint-config",
+    "@omer-x/eslint-config/typescript"
+  ],
+  "rules": {
+  }
+}
