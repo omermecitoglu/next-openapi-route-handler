@@ -64,6 +64,7 @@ export default function createRoute<M extends HttpMethod, PP, QP, RB>(input: Rou
   if (response400) {
     responses["400"] = response400;
   }
+  responses["500"] = { description: "Internal Server Error" };
 
   handler.apiData = {
     operationId: input.operationId,
