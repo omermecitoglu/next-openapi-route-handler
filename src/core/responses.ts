@@ -11,12 +11,13 @@ export function addBadRequest(queryParams?: unknown, requestBody?: unknown) {
 
 export function bundleResponses(collection: Record<string, ResponseDefinition>) {
   return Object.keys(collection).reduce((result, key) => {
+    const response = collection[key];
     return {
       ...result,
-      [key]: {
-        ...collection[key],
-        content: resolveContent(collection[key]?.content),
-      },
+      [key]: !response ? undefined : {
+        description: response.description,
+        content: resolveContent(response.content, response.isArray),
+      } satisfies ResponseObject,
     };
   }, {}) as ResponsesObject;
 }

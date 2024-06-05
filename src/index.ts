@@ -36,7 +36,7 @@ type RouteOptions<Method, PathParams, QueryParams, RequestBody> = {
 } & (RouteWithBody<RequestBody> | RouteWithoutBody);
 
 export default function createRoute<M extends HttpMethod, PP, QP, RB>(input: RouteOptions<M, PP, QP, RB>) {
-  const handler: RouteMethodHandler<RB, PP> = async (request, props) => {
+  const handler: RouteMethodHandler<PP> = async (request, props) => {
     try {
       const { searchParams } = new URL(request.url);
       const queryParams = parseSearchParams(searchParams, input.queryParams);
@@ -75,5 +75,5 @@ export default function createRoute<M extends HttpMethod, PP, QP, RB>(input: Rou
     responses: responses,
   };
 
-  return { [input.method]: handler } as RouteHandler<M, RB, PP>;
+  return { [input.method]: handler } as RouteHandler<M, PP>;
 }
