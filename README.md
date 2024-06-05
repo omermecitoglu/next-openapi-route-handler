@@ -14,16 +14,15 @@
 - **Integration with Next.js**: Works seamlessly with Next.js App Directory features.
 - **Customizable**: Compatible with existing Next.js projects and fully customizable to suit your needs.
 
-> **Note:** This package has a peer dependency on [`Next OpenAPI.json Generator`](https://www.npmjs.com/package/@omer-x/next-openapi-json-generator) for extracting the generated OpenAPI JSON.
+> **Note:** This package has a peer dependency on [`Next OpenAPI JSON Generator`](https://www.npmjs.com/package/@omer-x/next-openapi-json-generator) for extracting the generated OpenAPI JSON.
 
 ## Requirements
 
 To use `@omer-x/next-openapi-route-handler`, you'll need the following dependencies in your Next.js project:
 
 - [Next.js](https://nextjs.org/) >= v13
-- [TypeScript](https://www.typescriptlang.org/) >= v5
 - [Zod](https://zod.dev/) >= v3
-- [Next OpenAPI.json Generator](https://www.npmjs.com/package/@omer-x/next-openapi-json-generator)
+- [Next OpenAPI JSON Generator](https://www.npmjs.com/package/@omer-x/next-openapi-json-generator)
 
 ## Installation
 
@@ -37,18 +36,34 @@ npm install @omer-x/next-openapi-route-handler @omer-x/next-openapi-json-generat
 
 The `createRoute` function is used to define route handlers in a type-safe and self-documenting way. Below is a description of each property of the input parameter:
 
-| Property      | Type                                                       | Description                                                                              |
-| ------------- | ---------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| operationId   | `string`                                                   | Unique identifier for the operation.                                                     |
-| method        | `HttpMethod`                                               | HTTP method for the route (e.g., GET, POST, PUT, PATCH, DELETE).                         |
-| summary       | `string`                                                   | Short summary of the operation.                                                          |
-| description   | `string`                                                   | Detailed description of the operation.                                                   |
-| tags          | `string[]`                                                 | Tags for categorizing the operation.                                                     |
-| pathParams    | `ZodType`                                                  | Zod schema for validating path parameters.                                               |
-| queryParams   | `ZodType`                                                  | Zod schema for validating query parameters.                                              |
-| requestBody   | `ZodType`                                                  | Zod schema for the request body (required for POST/PUT/PATCH).                           |
-| action        | `({ pathParams, queryParams, body }) => Promise<Response>` | Function handling the request, receiving pathParams, queryParams, and requestBody.       |
-| responses     | `Record<string, ResponseDefinition>`                       | Object defining possible responses, each with a description and optional content schema. |
+| Property      | Type                                                         | Description                                                                              |
+| ------------- | ------------------------------------------------------------ | ---------------------------------------------------------------------------------------- |
+| operationId   | `string`                                                     | Unique identifier for the operation.                                                     |
+| method        | `string`                                                     | HTTP method for the route (e.g., `GET`, `POST`, `PUT`, `PATCH`, `DELETE`).               |
+| summary       | `string`                                                     | Short summary of the operation.                                                          |
+| description   | `string`                                                     | Detailed description of the operation.                                                   |
+| tags          | `string[]`                                                   | Tags for categorizing the operation.                                                     |
+| pathParams    | [ZodType](https://zod.dev)                                   | `(Optional)` Zod schema for validating path parameters.                                  |
+| queryParams   | [ZodType](https://zod.dev)                                   | `(Optional)` Zod schema for validating query parameters.                                 |
+| requestBody   | [ZodType](https://zod.dev)                                   | Zod schema for the request body (required for `POST`, `PUT`, `PATCH`).                   |
+| action        | (source: [ActionSource](#action-source)) => Promise<[Response](https://developer.mozilla.org/en-US/docs/Web/API/Response)> | Function handling the request, receiving pathParams, queryParams, and requestBody. |
+| responses     | Record<`number`, [ResponseDefinition](#response-definition)> | Object defining possible responses, each with a description and optional content schema. |
+
+### Action Source
+
+| Property      | Type                        | Description                                  |
+| ------------- | --------------------------- | -------------------------------------------- |
+| pathParams    | [ZodType](https://zod.dev)  | Parsed parameters from the request URL path. |
+| queryParams   | [ZodType](https://zod.dev)  | Parsed parameters from the request query.    |
+| body          | [ZodType](https://zod.dev)  | Parsed request body.                         |
+
+### Response Definition
+
+| Property      | Type                        | Description                                    |
+| ------------- | --------------------------- | ---------------------------------------------- |
+| description   | `string`                    | Description of the response.                   |
+| content       | [ZodType](https://zod.dev)  | `(Optional)` Zod schema for the response body. |
+| isArray       | `boolean`                   | `(Optional)` Is the content an array?          |
 
 ## Example
 
@@ -62,67 +77,19 @@ export const { GET } = createRoute({
   operationId: "getUser",
   method: "GET",
   summary: "Get a specific user by ID",
-  description: "Retrieve detailed information about a user by their unique ID",
+  description: "Retrieve details of a specific user by their ID",
   tags: ["Users"],
   pathParams: z.object({
     id: z.string().describe("ID of the user"),
   }),
-  action: ({ pathParams }) => {
-    const userId = pathParams.id;
-    // do something with userId
-    return Response.json(userId);
+  action: async ({ pathParams }) => {
+    const results = await db.select().from(users).where(eq(users.id, pathParams.id));
+    const user = results.shift();
+    if (!user) return new Response(null, { status: 404 });
+    return Response.json(user);
   },
   responses: {
-    200: {
-      description: "Successful response",
-      content: z.object({
-        id: z.string().uuid(),
-        name: z.string().min(1),
-        email: z.string().email(),
-        createdAt: z.date(),
-      }),
-    },
-    404: { description: "User not found" },
-  },
-});
-
-export const { PATCH } = createRoute({
-  operationId: "updateUser",
-  method: "PATCH",
-  summary: "Update a specific user by ID",
-  description: "Update the details of an existing user identified by their unique ID",
-  tags: ["Users"],
-  pathParams: z.object({
-    id: z.string().describe("ID of the user"),
-  }),
-  action: ({ pathParams }) => {
-    const userId = pathParams.id;
-    // do something with userId
-    return Response.json(userId);
-  },
-  responses: {
-    200: { description: "User updated successfully" },
-    404: { description: "User not found" },
-    409: { description: "Email already exists" },
-  },
-});
-
-export const { DELETE } = createRoute({
-  operationId: "deleteUser",
-  method: "DELETE",
-  summary: "Delete a specific user by ID",
-  description: "Remove a user from the system by their unique ID",
-  tags: ["Users"],
-  pathParams: z.object({
-    id: z.string().describe("ID of the user"),
-  }),
-  action: ({ pathParams }) => {
-    const userId = pathParams.id;
-    // do something with userId
-    return Response.json(userId);
-  },
-  responses: {
-    204: { description: "User deleted successfully" },
+    200: { description: "User details retrieved successfully", content: UserDTO },
     404: { description: "User not found" },
   },
 });
@@ -138,12 +105,22 @@ This will generate an OpenAPI JSON like this:
     "version": "1.0.0"
   },
   "paths": {
+    "/users": {
+      "get": {
+        ...
+      },
+      "post": {
+        ...
+      }
+    },
     "/users/{id}": {
       "get": {
         "operationId": "getUser",
         "summary": "Get a specific user by ID",
-        "description": "Retrieve detailed information about a user by their unique ID",
-        "tags": ["Users"],
+        "description": "Retrieve details of a specific user by their ID",
+        "tags": [
+          "Users"
+        ],
         "parameters": [
           {
             "in": "path",
@@ -151,37 +128,18 @@ This will generate an OpenAPI JSON like this:
             "required": true,
             "description": "ID of the user",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "description": "ID of the user"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "Successful response",
+            "description": "User details retrieved successfully",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "id": {
-                      "type": "string",
-                      "format": "uuid"
-                    },
-                    "name": {
-                      "type": "string",
-                      "minLength": 1
-                    },
-                    "email": {
-                      "type": "string",
-                      "format": "email"
-                    },
-                    "createdAt": {
-                      "type": "string",
-                      "format": "date-time"
-                    }
-                  },
-                  "required": ["id", "name", "email", "createdAt"],
-                  "additionalProperties": false
+                  "$ref": "#/components/schemas/UserDTO"
                 }
               }
             }
@@ -192,64 +150,78 @@ This will generate an OpenAPI JSON like this:
         }
       },
       "patch": {
-        "operationId": "updateUser",
-        "summary": "Update a specific user by ID",
-        "description": "Update the details of an existing user identified by their unique ID",
-        "tags": ["Users"],
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "description": "ID of the user",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "User updated successfully"
-          },
-          "404": {
-            "description": "User not found"
-          },
-          "409": {
-            "description": "Email already exists"
-          }
-        }
+        ...
       },
       "delete": {
-        "operationId": "deleteUser",
-        "summary": "Delete a specific user by ID",
-        "description": "Remove a user from the system by their unique ID",
-        "tags": ["Users"],
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "description": "ID of the user",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "User deleted successfully"
+        ...
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "UserDTO": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier of the user"
           },
-          "404": {
-            "description": "User not found"
+          "name": {
+            "type": "string",
+            "description": "Display name of the user"
+          },
+          "email": {
+            "type": "string",
+            "description": "Email address of the user"
+          },
+          "password": {
+            "type": "string",
+            "maxLength": 72,
+            "description": "Encrypted password of the user"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Creation date of the user"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Modification date of the user"
           }
-        }
+        },
+        "required": [
+          "id",
+          "name",
+          "email",
+          "password",
+          "createdAt",
+          "updatedAt"
+        ],
+        "additionalProperties": false,
+        "description": "Represents the data of a user in the system."
+      },
+      "NewUserDTO": {
+        ...
+      },
+      "UserPatchDTO": {
+        ...
       }
     }
   }
 }
 ```
 
-> **Important:** This package cannot extract the OpenAPI JSON by itself. Use [Next OpenAPI.json Generator](https://www.npmjs.com/package/@omer-x/next-openapi-json-generator) to extract the generated data as JSON.
+> **Important:** This package cannot extract the OpenAPI JSON by itself. Use [Next OpenAPI JSON Generator](https://www.npmjs.com/package/@omer-x/next-openapi-json-generator) to extract the generated data as JSON.
+
+[An example can be found here](https://github.com/omermecitoglu/example-user-service)
+
+## Screenshots
+
+| <a href="https://i.imgur.com/ru3muBc.png" target="_blank"><img src="https://i.imgur.com/ru3muBc.png" alt="screenshot-1"></a> | <a href="https://i.imgur.com/utHaZ6X.png" target="_blank"><img src="https://i.imgur.com/utHaZ6X.png" alt="screenshot-2"></a> | <a href="https://i.imgur.com/2f24kPE.png" target="_blank"><img src="https://i.imgur.com/2f24kPE.png" alt="screenshot-3"></a> | <a href="https://i.imgur.com/z3KIJQ1.png" target="_blank"><img src="https://i.imgur.com/z3KIJQ1.png" alt="screenshot-4"></a> |
+|:--------------:|:--------------:|:--------------:|:--------------:|
+| <a href="https://i.imgur.com/IFKXOiX.png" target="_blank"><img src="https://i.imgur.com/IFKXOiX.png" alt="screenshot-5"></a> | <a href="https://i.imgur.com/xzVjAPq.png" target="_blank"><img src="https://i.imgur.com/xzVjAPq.png" alt="screenshot-6"></a> | <a href="https://i.imgur.com/HrWuHOR.png" target="_blank"><img src="https://i.imgur.com/HrWuHOR.png" alt="screenshot-7"></a> |  |
 
 ## License
 
