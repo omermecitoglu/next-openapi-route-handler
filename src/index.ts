@@ -1,6 +1,7 @@
 import { type ZodType } from "zod";
 import { parseRequestBody, resolveRequestBody } from "./core/body";
 import { resolveParams } from "./core/params";
+import parsePathParams from "./core/path-params";
 import { addBadRequest, bundleResponses } from "./core/responses";
 import parseSearchParams from "./core/search-params";
 import type { HttpMethod } from "./types/http";
@@ -39,13 +40,10 @@ export default function createRoute<M extends HttpMethod, PP, QP, RB>(input: Rou
   const handler: RouteMethodHandler<PP> = async (request, props) => {
     try {
       const { searchParams } = new URL(request.url);
-      const queryParams = parseSearchParams(searchParams, input.queryParams);
-      const body = await parseRequestBody(request, input.method, input.requestBody ?? undefined);
-      return await input.action({
-        pathParams: (props.params ?? null) as PP,
-        queryParams: queryParams as QP,
-        body: body as RB,
-      });
+      const pathParams = parsePathParams(props.params, input.pathParams) as PP;
+      const queryParams = parseSearchParams(searchParams, input.queryParams) as QP;
+      const body = await parseRequestBody(request, input.method, input.requestBody ?? undefined) as RB;
+      return await input.action({ pathParams, queryParams, body });
     } catch (error) {
       if (error instanceof Error && error.constructor.name === "ZodError") {
         return new Response(null, { status: 400 });
