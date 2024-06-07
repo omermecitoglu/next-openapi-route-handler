@@ -46,6 +46,7 @@ The `createRoute` function is used to define route handlers in a type-safe and s
 | pathParams    | [ZodType](https://zod.dev)                                   | `(Optional)` Zod schema for validating path parameters.                                  |
 | queryParams   | [ZodType](https://zod.dev)                                   | `(Optional)` Zod schema for validating query parameters.                                 |
 | requestBody   | [ZodType](https://zod.dev)                                   | Zod schema for the request body (required for `POST`, `PUT`, `PATCH`).                   |
+| hasFormData   | `boolean`                                                    | Is the request body a [FormData](https://developer.mozilla.org/en-US/docs/Web/API/FormData) |
 | action        | (source: [ActionSource](#action-source)) => Promise<[Response](https://developer.mozilla.org/en-US/docs/Web/API/Response)> | Function handling the request, receiving pathParams, queryParams, and requestBody. |
 | responses     | Record<`number`, [ResponseDefinition](#response-definition)> | Object defining possible responses, each with a description and optional content schema. |
 

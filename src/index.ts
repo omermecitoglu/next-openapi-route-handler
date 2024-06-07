@@ -17,11 +17,13 @@ type ActionSource<PathParams, QueryParams, RequestBody> = {
 type RouteWithoutBody = {
   method: Extract<HttpMethod, "GET" | "DELETE" | "HEAD">,
   requestBody?: null,
+  hasFormData?: boolean,
 };
 
 type RouteWithBody<Body> = {
   method: Exclude<HttpMethod, "GET" | "DELETE" | "HEAD">,
   requestBody?: ZodType<Body> | string,
+  hasFormData?: boolean,
 };
 
 type RouteOptions<Method, PathParams, QueryParams, RequestBody> = {
@@ -42,7 +44,7 @@ export default function createRoute<M extends HttpMethod, PP, QP, RB>(input: Rou
       const { searchParams } = new URL(request.url);
       const pathParams = parsePathParams(props.params, input.pathParams) as PP;
       const queryParams = parseSearchParams(searchParams, input.queryParams) as QP;
-      const body = await parseRequestBody(request, input.method, input.requestBody ?? undefined) as RB;
+      const body = await parseRequestBody(request, input.method, input.requestBody ?? undefined, input.hasFormData) as RB;
       return await input.action({ pathParams, queryParams, body });
     } catch (error) {
       if (error instanceof Error && error.constructor.name === "ZodError") {
@@ -70,7 +72,7 @@ export default function createRoute<M extends HttpMethod, PP, QP, RB>(input: Rou
     description: input.description,
     tags: input.tags,
     parameters: parameters.length ? parameters : undefined,
-    requestBody: resolveRequestBody(input.requestBody ?? undefined),
+    requestBody: resolveRequestBody(input.requestBody ?? undefined, input.hasFormData),
     responses: responses,
   };
 
