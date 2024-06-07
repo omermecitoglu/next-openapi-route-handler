@@ -1,4 +1,4 @@
-import { ZodError, type ZodType } from "zod";
+import { type ZodType } from "zod";
 import { parseRequestBody, resolveRequestBody } from "./core/body";
 import { resolveParams } from "./core/params";
 import { addBadRequest, bundleResponses } from "./core/responses";
@@ -47,7 +47,7 @@ export default function createRoute<M extends HttpMethod, PP, QP, RB>(input: Rou
         body: body as RB,
       });
     } catch (error) {
-      if (error instanceof ZodError) {
+      if (error instanceof Error && error.constructor.name === "ZodError") {
         return new Response(null, { status: 400 });
       }
       return new Response(null, { status: 500 });

@@ -26,6 +26,7 @@ export default defineConfig({
     "src/cli.ts",
     "src/route-handler.ts",
   ],
+  external: ["zod", "zod-to-json-schema"],
   bundle: true,
   esbuildPlugins: [uaParserDirnamePlugin()],
   format: ["cjs", "esm"],
