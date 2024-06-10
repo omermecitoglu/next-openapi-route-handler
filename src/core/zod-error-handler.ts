@@ -14,7 +14,7 @@ export function safeParse<T>(schema: ZodType<T>, input: Record<string, unknown>)
         return safeParse(schema, convertStringToNumber(input, issue.path as string[]));
       }
     }
-    throw new Error("There are some errors left unhandled. (next-openapi-route-handler)");
+    throw result.error;
   }
   return result.data;
 }
