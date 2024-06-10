@@ -42,7 +42,7 @@ export default function createRoute<M extends HttpMethod, PP, QP, RB>(input: Rou
   const handler: RouteMethodHandler<PP> = async (request, props) => {
     try {
       const { searchParams } = new URL(request.url);
-      const pathParams = parsePathParams(props.params, input.pathParams) as PP;
+      const pathParams = parsePathParams<PP>(props.params, input.pathParams) as PP;
       const queryParams = parseSearchParams(searchParams, input.queryParams) as QP;
       const body = await parseRequestBody(request, input.method, input.requestBody ?? undefined, input.hasFormData) as RB;
       return await input.action({ pathParams, queryParams, body });
