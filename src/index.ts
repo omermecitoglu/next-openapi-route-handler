@@ -47,8 +47,15 @@ export default function createRoute<M extends HttpMethod, PP, QP, RB>(input: Rou
       const body = await parseRequestBody(request, input.method, input.requestBody ?? undefined, input.hasFormData) as RB;
       return await input.action({ pathParams, queryParams, body });
     } catch (error) {
-      if (error instanceof Error && error.constructor.name === "ZodError") {
-        return new Response(null, { status: 400 });
+      if (error instanceof Error) {
+        switch (error.message) {
+          case "PARSE_FORM_DATA":
+          case "PARSE_REQUEST_BODY":
+          case "PARSE_SEARCH_PARAMS":
+            return new Response(null, { status: 400 });
+          case "PARSE_PATH_PARAMS":
+            return new Response(null, { status: 404 });
+        }
       }
       return new Response(null, { status: 500 });
     }

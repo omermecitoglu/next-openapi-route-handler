@@ -1,5 +1,5 @@
 import { safeParse } from "./zod-error-handler";
-import type { ZodType } from "zod";
+import type { ZodError, ZodType } from "zod";
 
 function serializeArray(value: string[]) {
   return value.join(",");
@@ -19,5 +19,13 @@ export default function parseSearchParams<T>(source: URLSearchParams, schema?: Z
       [key]: serializeArray(values),
     };
   }, {});
-  return safeParse(schema, params);
+  try {
+    return safeParse(schema, params);
+  } catch (error) {
+    if (process.env.NODE_ENV !== "production") {
+      // eslint-disable-next-line no-console
+      console.log((error as ZodError).issues);
+    }
+    throw new Error("PARSE_SEARCH_PARAMS");
+  }
 }

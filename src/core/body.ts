@@ -2,7 +2,7 @@ import type { HttpMethod } from "~/types/http";
 import type { FixedRequest } from "~/types/request";
 import { resolveContent } from "./content";
 import type { RequestBodyObject } from "@omer-x/openapi-types/request-body";
-import type { ZodType } from "zod";
+import type { ZodError, ZodType } from "zod";
 
 export function resolveRequestBody(source?: ZodType<unknown> | string, isFormData: boolean = false) {
   if (!source) return undefined;
@@ -26,7 +26,23 @@ export async function parseRequestBody<B>(
     const body = Array.from(formData.keys()).reduce((collection, key) => ({
       ...collection, [key]: formData.get(key),
     }), {});
-    return schema.parse(body);
+    try {
+      return schema.parse(body);
+    } catch (error) {
+      if (process.env.NODE_ENV !== "production") {
+        // eslint-disable-next-line no-console
+        console.log((error as ZodError).issues);
+      }
+      throw new Error("PARSE_FORM_DATA");
+    }
   }
-  return schema.parse(await request.json());
+  try {
+    return schema.parse(await request.json());
+  } catch (error) {
+    if (process.env.NODE_ENV !== "production") {
+      // eslint-disable-next-line no-console
+      console.log((error as ZodError).issues);
+    }
+    throw new Error("PARSE_REQUEST_BODY");
+  }
 }
