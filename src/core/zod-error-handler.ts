@@ -1,5 +1,5 @@
 import { deserializeArray } from "./search-params";
-import type { ZodType } from "zod";
+import type { ZodType, ZodTypeDef } from "zod";
 
 function convertStringToNumber(input: Record<string, unknown>, keys: string[]) {
   return keys.reduce((mutation, key) => {
@@ -25,7 +25,7 @@ function convertStringToArray(input: Record<string, unknown>, keys: string[]) {
   }, input);
 }
 
-export function safeParse<T>(schema: ZodType<T>, input: Record<string, unknown>) {
+export function safeParse<I, O>(schema: ZodType<O, ZodTypeDef, I>, input: Record<string, unknown>) {
   const result = schema.safeParse(input);
   if (!result.success) {
     for (const issue of result.error.issues) {

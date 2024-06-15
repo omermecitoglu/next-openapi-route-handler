@@ -1,7 +1,7 @@
 import { safeParse } from "./zod-error-handler";
-import type { ZodError, ZodType } from "zod";
+import type { ZodError, ZodType, ZodTypeDef } from "zod";
 
-export default function parsePathParams<T>(source?: T, schema?: ZodType<T>) {
+export default function parsePathParams<I, O>(source?: I, schema?: ZodType<O, ZodTypeDef, I>) {
   if (!schema || !source) return null;
   try {
     return safeParse(schema, source as Record<string, unknown>);

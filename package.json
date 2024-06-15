@@ -1,6 +1,6 @@
 {
   "name": "@omer-x/next-openapi-route-handler",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "a Next.js plugin to generate OpenAPI documentation from route handlers",
   "keywords": [
     "next.js",
@@ -44,7 +44,7 @@
   },
   "devDependencies": {
     "@omer-x/eslint-config": "^1.0.7",
-    "@omer-x/openapi-types": "^0.1.1",
+    "@omer-x/openapi-types": "^0.1.2",
     "@types/node": "^20.14.2",
     "eslint": "^8.57.0",
     "ts-unused-exports": "^10.1.0",

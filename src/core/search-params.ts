@@ -1,5 +1,5 @@
 import { safeParse } from "./zod-error-handler";
-import type { ZodError, ZodType } from "zod";
+import type { ZodError, ZodType, ZodTypeDef } from "zod";
 
 function serializeArray(value: string[]) {
   return value.join(",");
@@ -9,7 +9,7 @@ export function deserializeArray(value: string) {
   return value.split(",");
 }
 
-export default function parseSearchParams<T>(source: URLSearchParams, schema?: ZodType<T>) {
+export default function parseSearchParams<I, O>(source: URLSearchParams, schema?: ZodType<O, ZodTypeDef, I>) {
   if (!schema) return null;
   const sourceKeys = Array.from(new Set(source.keys()));
   const params = sourceKeys.reduce((collection, key) => {

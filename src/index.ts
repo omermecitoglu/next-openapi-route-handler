@@ -1,4 +1,3 @@
-import { type ZodType } from "zod";
 import { parseRequestBody, resolveRequestBody } from "./core/body";
 import { resolveParams } from "./core/params";
 import parsePathParams from "./core/path-params";
@@ -7,6 +6,7 @@ import parseSearchParams from "./core/search-params";
 import type { HttpMethod } from "./types/http";
 import type { RouteHandler, RouteMethodHandler } from "./types/next";
 import type { ResponseDefinition } from "./types/response";
+import type { ZodType, ZodTypeDef } from "zod";
 
 type ActionSource<PathParams, QueryParams, RequestBody> = {
   pathParams: PathParams,
@@ -20,31 +20,39 @@ type RouteWithoutBody = {
   hasFormData?: boolean,
 };
 
-type RouteWithBody<Body> = {
+type RouteWithBody<I, O> = {
   method: Exclude<HttpMethod, "GET" | "DELETE" | "HEAD">,
-  requestBody?: ZodType<Body> | string,
+  requestBody?: ZodType<O, ZodTypeDef, I> | string,
   hasFormData?: boolean,
 };
 
-type RouteOptions<Method, PathParams, QueryParams, RequestBody> = {
+type RouteOptions<
+  Method,
+  PathParamsInput,
+  PathParamsOutput,
+  QueryParamsInput,
+  QueryParamsOutput,
+  RequestBodyInput,
+  RequestBodyOutput,
+> = {
   operationId: string,
   method: Method,
   summary: string,
   description: string,
   tags: string[],
-  pathParams?: ZodType<PathParams>,
-  queryParams?: ZodType<QueryParams>,
-  action: (source: ActionSource<PathParams, QueryParams, RequestBody>) => Response | Promise<Response>,
+  pathParams?: ZodType<PathParamsOutput, ZodTypeDef, PathParamsInput>,
+  queryParams?: ZodType<QueryParamsOutput, ZodTypeDef, QueryParamsInput>,
+  action: (source: ActionSource<PathParamsOutput, QueryParamsOutput, RequestBodyOutput>) => Response | Promise<Response>,
   responses: Record<string, ResponseDefinition>,
-} & (RouteWithBody<RequestBody> | RouteWithoutBody);
+} & (RouteWithBody<RequestBodyInput, RequestBodyOutput> | RouteWithoutBody);
 
-export default function createRoute<M extends HttpMethod, PP, QP, RB>(input: RouteOptions<M, PP, QP, RB>) {
-  const handler: RouteMethodHandler<PP> = async (request, props) => {
+function createRoute<M extends HttpMethod, PPI, PPO, QPI, QPO, RBI, RBO>(input: RouteOptions<M, PPI, PPO, QPI, QPO, RBI, RBO>) {
+  const handler: RouteMethodHandler<PPI> = async (request, props) => {
     try {
       const { searchParams } = new URL(request.url);
-      const pathParams = parsePathParams<PP>(props.params, input.pathParams) as PP;
-      const queryParams = parseSearchParams(searchParams, input.queryParams) as QP;
-      const body = await parseRequestBody(request, input.method, input.requestBody ?? undefined, input.hasFormData) as RB;
+      const pathParams = parsePathParams(props.params, input.pathParams) as PPO;
+      const queryParams = parseSearchParams(searchParams, input.queryParams) as QPO;
+      const body = await parseRequestBody(request, input.method, input.requestBody ?? undefined, input.hasFormData) as RBO;
       return await input.action({ pathParams, queryParams, body });
     } catch (error) {
       if (error instanceof Error) {
@@ -83,5 +91,7 @@ export default function createRoute<M extends HttpMethod, PP, QP, RB>(input: Rou
     responses: responses,
   };
 
-  return { [input.method]: handler } as RouteHandler<M, PP>;
+  return { [input.method]: handler } as RouteHandler<M, PPI>;
 }
+
+export default createRoute;

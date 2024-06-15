@@ -1,5 +1,5 @@
-export interface FixedRequest<RequestBody> {
+export interface FixedRequest<RequestBodyInput> {
   url: string,
-  json: () => Promise<RequestBody>,
+  json: () => Promise<RequestBodyInput>,
   formData: () => Promise<FormData>,
 }
