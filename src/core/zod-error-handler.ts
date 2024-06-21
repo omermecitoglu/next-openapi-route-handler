@@ -3,7 +3,7 @@ import type { ZodType, ZodTypeDef } from "zod";
 
 function convertStringToNumber(input: Record<string, unknown>, keys: string[]) {
   return keys.reduce((mutation, key) => {
-    return { ...mutation, [key]: parseInt(mutation[key] as string) } as Record<string, unknown>;
+    return { ...mutation, [key]: parseFloat(mutation[key] as string) } as Record<string, unknown>;
   }, input);
 }
 
