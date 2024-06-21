@@ -63,6 +63,15 @@ function createRoute<M extends HttpMethod, PPI, PPO, QPI, QPO, RBI, RBO>(input: 
             return new Response(null, { status: 400 });
           case "PARSE_PATH_PARAMS":
             return new Response(null, { status: 404 });
+          case "UNNECESSARY_PATH_PARAMS": {
+            if (process.env.NODE_ENV !== "production") {
+              console.log([
+                "[Next OpenAPI Route Handler]",
+                "You tried to add pathParams to a route which doesn't have any dynamic params.",
+                "Maybe you meant queryParams instead?",
+              ].join(" "));
+            }
+          }
         }
       }
       return new Response(null, { status: 500 });

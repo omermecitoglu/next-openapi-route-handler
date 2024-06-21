@@ -2,7 +2,8 @@ import { safeParse } from "./zod-error-handler";
 import type { ZodError, ZodType, ZodTypeDef } from "zod";
 
 export default function parsePathParams<I, O>(source?: I, schema?: ZodType<O, ZodTypeDef, I>) {
-  if (!schema || !source) return null;
+  if (!schema) return null;
+  if (!source) throw new Error("UNNECESSARY_PATH_PARAMS");
   try {
     return safeParse(schema, source as Record<string, unknown>);
   } catch (error) {
