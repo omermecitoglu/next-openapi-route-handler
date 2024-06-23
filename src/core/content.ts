@@ -2,6 +2,7 @@ import zodToJsonSchema from "zod-to-json-schema";
 import type { RequestBodyObject } from "@omer-x/openapi-types/request-body";
 import type { SchemaObject } from "@omer-x/openapi-types/schema";
 import type { ZodObject, ZodType } from "zod";
+import convertToOpenAPI from "./zod-to-openapi";
 
 function resolveSchema(source: ZodType<unknown> | string, isArray: boolean = false): SchemaObject {
   if (typeof source === "string") {
@@ -11,8 +12,8 @@ function resolveSchema(source: ZodType<unknown> | string, isArray: boolean = fal
     }
     return refObject;
   }
-  const schema = zodToJsonSchema(isArray ? source.array() : source, { target: "openApi3" }) as SchemaObject;
-  if (schema.type === "object" && source.constructor.name === "ZodObject") {
+  const schema = convertToOpenAPI(source, isArray);
+  if (schema.type === "object") {
     // eslint-disable-next-line @typescript-eslint/ban-types
     for (const [propName, prop] of Object.entries((source as ZodObject<{}>).shape)) {
       const result = (prop as ZodType).safeParse(new File([], "nothing.txt"));
