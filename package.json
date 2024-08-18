@@ -40,16 +40,16 @@
     "dev": "tsup --dts --watch"
   },
   "dependencies": {
-    "zod-to-json-schema": "^3.23.1"
+    "zod-to-json-schema": "^3.23.2"
   },
   "devDependencies": {
     "@omer-x/eslint-config": "^1.0.7",
-    "@omer-x/openapi-types": "^0.1.2",
-    "@types/node": "^20.14.8",
+    "@omer-x/openapi-types": "^0.2.1",
+    "@types/node": "^22.4.0",
     "eslint": "^8.57.0",
     "ts-unused-exports": "^10.1.0",
-    "tsup": "^8.1.0",
-    "typescript": "^5.5.2"
+    "tsup": "^8.2.4",
+    "typescript": "^5.5.4"
   },
   "peerDependencies": {
     "zod": "^3.23.8"
