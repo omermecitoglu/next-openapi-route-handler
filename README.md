@@ -34,7 +34,7 @@ npm install @omer-x/next-openapi-route-handler @omer-x/next-openapi-json-generat
 
 ## Usage
 
-The `createRoute` function is used to define route handlers in a type-safe and self-documenting way. Below is a description of each property of the input parameter:
+The `defineRoute` function is used to define route handlers in a type-safe and self-documenting way. Below is a description of each property of the input parameter:
 
 | Property      | Type                                                         | Description                                                                              |
 | ------------- | ------------------------------------------------------------ | ---------------------------------------------------------------------------------------- |
@@ -68,13 +68,13 @@ The `createRoute` function is used to define route handlers in a type-safe and s
 
 ## Example
 
-Here's an example of how to use `createRoute` to define route handlers:
+Here's an example of how to use `defineRoute` to define route handlers:
 
 ```typescript
-import createRoute from "@omer-x/next-openapi-route-handler";
+import defineRoute from "@omer-x/next-openapi-route-handler";
 import z from "zod";
 
-export const { GET } = createRoute({
+export const { GET } = defineRoute({
   operationId: "getUser",
   method: "GET",
   summary: "Get a specific user by ID",

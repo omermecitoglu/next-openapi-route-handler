@@ -46,7 +46,7 @@ type RouteOptions<
   responses: Record<string, ResponseDefinition>,
 } & (RouteWithBody<RequestBodyInput, RequestBodyOutput> | RouteWithoutBody);
 
-function createRoute<M extends HttpMethod, PPI, PPO, QPI, QPO, RBI, RBO>(input: RouteOptions<M, PPI, PPO, QPI, QPO, RBI, RBO>) {
+function defineRoute<M extends HttpMethod, PPI, PPO, QPI, QPO, RBI, RBO>(input: RouteOptions<M, PPI, PPO, QPI, QPO, RBI, RBO>) {
   const handler: RouteMethodHandler<PPI> = async (request, props) => {
     try {
       const { searchParams } = new URL(request.url);
@@ -103,4 +103,4 @@ function createRoute<M extends HttpMethod, PPI, PPO, QPI, QPO, RBI, RBO>(input: 
   return { [input.method]: handler } as RouteHandler<M, PPI>;
 }
 
-export default createRoute;
+export default defineRoute;
