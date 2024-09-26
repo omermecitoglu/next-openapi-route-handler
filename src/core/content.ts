@@ -1,8 +1,7 @@
-import zodToJsonSchema from "zod-to-json-schema";
+import convertToOpenAPI from "./zod-to-openapi";
 import type { RequestBodyObject } from "@omer-x/openapi-types/request-body";
 import type { SchemaObject } from "@omer-x/openapi-types/schema";
-import type { ZodObject, ZodType } from "zod";
-import convertToOpenAPI from "./zod-to-openapi";
+import type { ZodType } from "zod";
 
 function resolveSchema(source: ZodType<unknown> | string, isArray: boolean = false): SchemaObject {
   if (typeof source === "string") {
@@ -12,21 +11,7 @@ function resolveSchema(source: ZodType<unknown> | string, isArray: boolean = fal
     }
     return refObject;
   }
-  const schema = convertToOpenAPI(source, isArray);
-  if (schema.type === "object") {
-    // eslint-disable-next-line @typescript-eslint/ban-types
-    for (const [propName, prop] of Object.entries((source as ZodObject<{}>).shape)) {
-      const result = (prop as ZodType).safeParse(new File([], "nothing.txt"));
-      if (result.success) {
-        schema.properties[propName] = {
-          type: "string",
-          format: "binary",
-          // contentEncoding: "base64", // swagger-ui-react doesn't support this
-        };
-      }
-    }
-  }
-  return schema;
+  return convertToOpenAPI(source, isArray);
 }
 
 export function resolveContent(source?: ZodType<unknown> | string, isArray: boolean = false, isFormData: boolean = false) {
