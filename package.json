@@ -35,6 +35,7 @@
     "dist/"
   ],
   "scripts": {
+    "test": "jest",
     "prebuild": "ts-unused-exports tsconfig.json --excludePathsFromReport='tsup.config.ts;src/index'",
     "build": "tsup --dts",
     "dev": "tsup --dts --watch"
@@ -47,6 +48,8 @@
     "@omer-x/openapi-types": "^0.2.1",
     "@types/node": "^22.7.2",
     "eslint": "^8.57.1",
+    "ts-jest": "^29.2.5",
+    "ts-node": "^10.9.2",
     "ts-unused-exports": "^10.1.0",
     "tsup": "^8.3.0",
     "typescript": "^5.6.2"
