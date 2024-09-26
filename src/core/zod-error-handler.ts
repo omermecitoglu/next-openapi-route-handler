@@ -1,4 +1,4 @@
-import { deserializeArray } from "./search-params";
+import { deserializeArray } from "~/utils/array-serialization";
 import type { ZodType, ZodTypeDef } from "zod";
 
 function convertStringToNumber(input: Record<string, unknown>, keys: string[]) {
