@@ -3,18 +3,15 @@ import { resolveContent } from "./content";
 import type { ResponseObject, ResponsesObject } from "@omer-x/openapi-types/response";
 
 export function addBadRequest(queryParams?: unknown, requestBody?: unknown) {
-  if (queryParams || requestBody) {
-    return { description: "Bad Request" } as ResponseObject;
-  }
-  return undefined;
+  if (!queryParams && !requestBody) return undefined;
+  return { description: "Bad Request" } as ResponseObject;
 }
 
 export function bundleResponses(collection: Record<string, ResponseDefinition>) {
-  return Object.keys(collection).reduce((result, key) => {
-    const response = collection[key];
+  return Object.entries(collection).reduce((result, [key, response]) => {
     return {
       ...result,
-      [key]: !response ? undefined : {
+      [key]: {
         description: response.description,
         content: resolveContent(response.content, response.isArray),
       } satisfies ResponseObject,
