@@ -1,24 +1,5 @@
-import { deserializeArray } from "~/utils/array-serialization";
-import { getTrueBoolean } from "~/utils/boolean";
+import { convertStringToArray, convertStringToBoolean, convertStringToNumber } from "~/utils/type-conversion";
 import type { ZodType, ZodTypeDef } from "zod";
-
-function convertStringToNumber(input: Record<string, unknown>, keys: string[]) {
-  return keys.reduce((mutation, key) => {
-    return { ...mutation, [key]: parseFloat(mutation[key] as string) } as Record<string, unknown>;
-  }, input);
-}
-
-function convertStringToBoolean(input: Record<string, unknown>, keys: string[]) {
-  return keys.reduce((mutation, key) => {
-    return { ...mutation, [key]: getTrueBoolean(mutation[key] as string) } as Record<string, unknown>;
-  }, input);
-}
-
-function convertStringToArray(input: Record<string, unknown>, keys: string[]) {
-  return keys.reduce((mutation, key) => {
-    return { ...mutation, [key]: deserializeArray(mutation[key] as string) } as Record<string, unknown>;
-  }, input);
-}
 
 export function safeParse<I, O>(schema: ZodType<O, ZodTypeDef, I>, input: Record<string, unknown>) {
   const result = schema.safeParse(input);
