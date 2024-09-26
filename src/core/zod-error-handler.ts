@@ -1,16 +1,11 @@
 import { deserializeArray } from "~/utils/array-serialization";
+import { getTrueBoolean } from "~/utils/boolean";
 import type { ZodType, ZodTypeDef } from "zod";
 
 function convertStringToNumber(input: Record<string, unknown>, keys: string[]) {
   return keys.reduce((mutation, key) => {
     return { ...mutation, [key]: parseFloat(mutation[key] as string) } as Record<string, unknown>;
   }, input);
-}
-
-function getTrueBoolean(input: string) {
-  if (input === "true") return true;
-  if (input === "false") return false;
-  return null;
 }
 
 function convertStringToBoolean(input: Record<string, unknown>, keys: string[]) {
