@@ -1,9 +1,12 @@
 # Next OpenAPI Route Handler
 
 [![npm version](https://img.shields.io/npm/v/@omer-x/next-openapi-route-handler)](https://www.npmjs.com/package/@omer-x/next-openapi-route-handler)
-[![npm downloads](https://img.shields.io/npm/dm/@omer-x/next-openapi-route-handler)](https://www.npmjs.com/package/@omer-x/next-openapi-route-handler)
+[![npm downloads](https://img.shields.io/npm/dm/@omer-x/next-openapi-route-handler?color=007820)](https://www.npmjs.com/package/@omer-x/next-openapi-route-handler)
 [![codecov](https://codecov.io/gh/omermecitoglu/next-openapi-route-handler/branch/main/graph/badge.svg)](https://codecov.io/gh/omermecitoglu/next-openapi-route-handler)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![GitHub last commit](https://img.shields.io/github/last-commit/omermecitoglu/next-openapi-route-handler?color=c977be)](https://github.com/omermecitoglu/next-openapi-route-handler/commits/main/)
+[![GitHub issues](https://img.shields.io/github/issues/omermecitoglu/next-openapi-route-handler?color=a38eed)](https://github.com/omermecitoglu/next-openapi-route-handler/issues)
+[![GitHub stars](https://img.shields.io/github/stars/omermecitoglu/next-openapi-route-handler?style=social)](https://github.com/omermecitoglu/next-openapi-route-handler)
 
 ## Overview
 
