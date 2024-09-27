@@ -1,6 +1,6 @@
 {
   "name": "@omer-x/next-openapi-route-handler",
-  "version": "0.4.3",
+  "version": "1.0.0",
   "description": "a Next.js plugin to generate OpenAPI documentation from route handlers",
   "keywords": [
     "next.js",
@@ -36,7 +36,7 @@
   ],
   "scripts": {
     "test": "jest",
-    "prebuild": "ts-unused-exports tsconfig.json --excludePathsFromReport='tsup.config.ts;src/index'",
+    "prebuild": "ts-unused-exports tsconfig.json --excludePathsFromReport='.config;src/index'",
     "build": "tsup --dts",
     "dev": "tsup --dts --watch"
   },
@@ -46,8 +46,9 @@
   "devDependencies": {
     "@omer-x/eslint-config": "^1.0.7",
     "@omer-x/openapi-types": "^0.2.1",
-    "@types/node": "^22.7.2",
+    "@types/node": "^22.7.3",
     "eslint": "^8.57.1",
+    "semantic-release": "^24.1.1",
     "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2",
     "ts-unused-exports": "^10.1.0",
