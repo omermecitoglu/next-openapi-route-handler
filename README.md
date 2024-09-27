@@ -1,6 +1,8 @@
 # Next OpenAPI Route Handler
 
-[![npm version](https://badge.fury.io/js/%40omer-x%2Fopenapi-types.svg)](https://badge.fury.io/js/%40omer-x%2Fnext-openapi-route-handler)
+[![npm version](https://img.shields.io/npm/v/@omer-x/next-openapi-route-handler)](https://www.npmjs.com/package/@omer-x/next-openapi-route-handler)
+[![npm downloads](https://img.shields.io/npm/dm/@omer-x/next-openapi-route-handler)](https://www.npmjs.com/package/@omer-x/next-openapi-route-handler)
+[![codecov](https://codecov.io/gh/omermecitoglu/next-openapi-route-handler/branch/main/graph/badge.svg)](https://codecov.io/gh/omermecitoglu/next-openapi-route-handler)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Overview
