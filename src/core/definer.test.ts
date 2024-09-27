@@ -8,7 +8,7 @@ describe("defineRoute", () => {
   const mockRequest = {
     url: "https://example.com/test",
     json: jest.fn() as jest.Mock<() => Promise<unknown>>,
-    formData: jest.fn(),
+    formData: jest.fn() as jest.Mock<() => Promise<FormData>>,
   };
 
   afterEach(() => {
@@ -105,6 +105,38 @@ describe("defineRoute", () => {
     expect(response).toBeInstanceOf(Response);
     expect(response.status).toBe(400);
 
+    expect(console.log).toHaveBeenCalled();
+    console.log = originalLog; // Restore original console.log
+  });
+
+  it("should return 400 on bad request (invalid form body)", async () => {
+    const originalLog = console.log;
+    console.log = jest.fn(); // Mock console.log to verify error logging
+
+    const invalidFormData = new FormData();
+    mockRequest.formData.mockResolvedValue(invalidFormData);
+
+    const route = defineRoute({
+      operationId: "uploadFile",
+      method: "PUT",
+      summary: "Upload a file",
+      description: "Uploads a file to the storage service",
+      tags: ["Upload"],
+      requestBody: z.object({
+        file: z.instanceof(File).describe("File object to be uploaded"),
+      }),
+      hasFormData: true,
+      action: mockAction,
+      responses: {
+        201: { description: "File uploaded successfully" },
+      },
+    });
+
+    const nextJsRouteHandler = route.PUT;
+    const response = await nextJsRouteHandler(mockRequest as unknown as Request, {});
+
+    expect(response).toBeInstanceOf(Response);
+    expect(response.status).toBe(400);
     expect(console.log).toHaveBeenCalled();
     console.log = originalLog; // Restore original console.log
   });
