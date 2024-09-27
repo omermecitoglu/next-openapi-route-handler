@@ -1,6 +1,7 @@
 import type { HttpMethod } from "~/types/http";
 import type { FixedRequest } from "~/types/request";
 import { resolveContent } from "./content";
+import { safeParse } from "./zod-error-handler";
 import type { RequestBodyObject } from "@omer-x/openapi-types/request-body";
 import type { ZodError, ZodType, ZodTypeDef } from "zod";
 
@@ -27,7 +28,7 @@ export async function parseRequestBody<I, O>(
       ...collection, [key]: formData.get(key),
     }), {});
     try {
-      return schema.parse(body);
+      return safeParse(schema, body);
     } catch (error) {
       if (process.env.NODE_ENV !== "production") {
         // eslint-disable-next-line no-console
