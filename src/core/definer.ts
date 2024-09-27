@@ -1,11 +1,11 @@
-import { parseRequestBody, resolveRequestBody } from "./core/body";
-import { resolveParams } from "./core/params";
-import parsePathParams from "./core/path-params";
-import { addBadRequest, bundleResponses } from "./core/responses";
-import parseSearchParams from "./core/search-params";
-import type { HttpMethod } from "./types/http";
-import type { RouteHandler, RouteMethodHandler } from "./types/next";
-import type { ResponseDefinition } from "./types/response";
+import type { HttpMethod } from "~/types/http";
+import type { RouteHandler, RouteMethodHandler } from "~/types/next";
+import type { ResponseDefinition } from "~/types/response";
+import { parseRequestBody, resolveRequestBody } from "./body";
+import { resolveParams } from "./params";
+import parsePathParams from "./path-params";
+import { addBadRequest, bundleResponses } from "./responses";
+import parseSearchParams from "./search-params";
 import type { ZodType, ZodTypeDef } from "zod";
 
 type ActionSource<PathParams, QueryParams, RequestBody> = {
@@ -65,6 +65,7 @@ function defineRoute<M extends HttpMethod, PPI, PPO, QPI, QPO, RBI, RBO>(input: 
             return new Response(null, { status: 404 });
           case "UNNECESSARY_PATH_PARAMS": {
             if (process.env.NODE_ENV !== "production") {
+              // eslint-disable-next-line no-console
               console.log([
                 "[Next OpenAPI Route Handler]",
                 "You tried to add pathParams to a route which doesn't have any dynamic params.",
