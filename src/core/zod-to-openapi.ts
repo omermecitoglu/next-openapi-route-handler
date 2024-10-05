@@ -9,7 +9,7 @@ export default function convertToOpenAPI(schema: ZodType<unknown>, isArray: bool
     $refStrategy: "none",
   }) as SchemaObject;
   if (result.type === "object" && result.properties) {
-    // eslint-disable-next-line @typescript-eslint/ban-types
+    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
     for (const [propName, prop] of Object.entries<ZodType>((schema as ZodObject<{}>).shape)) {
       if (isFile(prop)) {
         result.properties[propName] = {

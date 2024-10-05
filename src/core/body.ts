@@ -18,7 +18,7 @@ export async function parseRequestBody<I, O>(
   request: FixedRequest<NoInfer<I>>,
   method: HttpMethod,
   schema?: ZodType<O, ZodTypeDef, I> | string,
-  isFormData: boolean = false
+  isFormData: boolean = false,
 ): Promise<O | null> {
   if (!schema || typeof schema === "string") return null;
   if (method === "GET") throw new Error("GET routes can't have request body");
