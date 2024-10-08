@@ -1,1 +1,4 @@
-export { default as defineRoute } from "./core/definer";
+import defineRoute from "./core/definer";
+
+export default defineRoute
+export { defineRoute };
