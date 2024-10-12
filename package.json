@@ -28,17 +28,22 @@
     "url": "https://omermecitoglu.github.io"
   },
   "license": "MIT",
-  "main": "dist/index.js",
-  "module": "dist/index.mjs",
-  "types": "dist/index.d.ts",
+  "type": "module",
   "files": [
     "dist/"
   ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
   "scripts": {
     "test": "jest",
     "prebuild": "ts-unused-exports tsconfig.json --excludePathsFromReport='.config;src/index'",
-    "build": "tsup --dts",
-    "dev": "tsup --dts --watch"
+    "build": "tsup",
+    "dev": "tsup --watch"
   },
   "dependencies": {
     "zod-to-json-schema": "^3.23.3"
