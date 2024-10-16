@@ -60,7 +60,13 @@ function defineRoute<M extends HttpMethod, PPI, PPO, QPI, QPO, RBI, RBO>(input: 
           case "PARSE_FORM_DATA":
           case "PARSE_REQUEST_BODY":
           case "PARSE_SEARCH_PARAMS":
-            return new Response(null, { status: 400 });
+            return new Response(JSON.stringify({
+              success: false,
+              errorType: `${error.message}_ERROR`,
+              zodIssues: error.cause,
+            }), {
+              status: 400,
+            });
           case "PARSE_PATH_PARAMS":
             return new Response(null, { status: 404 });
           case "UNNECESSARY_PATH_PARAMS": {

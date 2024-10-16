@@ -34,16 +34,20 @@ export async function parseRequestBody<I, O>(
         // eslint-disable-next-line no-console
         console.log((error as ZodError).issues);
       }
-      throw new Error("PARSE_FORM_DATA");
+      throw new Error("PARSE_FORM_DATA", { cause: (error as ZodError).issues });
     }
   }
   try {
     return schema.parse(await request.json());
   } catch (error) {
+    if (error instanceof Error && error.message === "Unexpected end of JSON input") {
+      const result = schema.safeParse({});
+      throw new Error("PARSE_REQUEST_BODY", { cause: result.error?.issues });
+    }
     if (process.env.NODE_ENV !== "production") {
       // eslint-disable-next-line no-console
       console.log((error as ZodError).issues);
     }
-    throw new Error("PARSE_REQUEST_BODY");
+    throw new Error("PARSE_REQUEST_BODY", { cause: (error as ZodError).issues });
   }
 }
