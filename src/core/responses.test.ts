@@ -3,6 +3,54 @@ import type { ResponseDefinition } from "~/types/response";
 import { addBadRequest, bundleResponses } from "./responses";
 
 describe("addBadRequest", () => {
+  const badRequestContent = {
+    "application/json": {
+      schema: {
+        type: "object",
+        properties: {
+          errorType: {
+            enum: [
+              "PARSE_FORM_DATA_ERROR",
+              "PARSE_REQUEST_BODY_ERROR",
+              "PARSE_SEARCH_PARAMS_ERROR",
+            ],
+            type: "string",
+          },
+          success: {
+            type: "boolean",
+          },
+          zodIssues: {
+            items: {
+              type: "object",
+              properties: {
+                code: {
+                  type: "string",
+                },
+                message: {
+                  type: "string",
+                },
+                path: {
+                  items: {
+                    anyOf: [
+                      { type: "string" },
+                      { type: "number" },
+                    ],
+                  },
+                  type: "array",
+                },
+              },
+              required: ["code", "path", "message"],
+              additionalProperties: false,
+            },
+            type: "array",
+          },
+        },
+        required: ["success", "errorType", "zodIssues"],
+        additionalProperties: false,
+      },
+    },
+  };
+
   it("should return undefined if neither queryParams nor requestBody are provided", () => {
     const result = addBadRequest();
     expect(result).toBeUndefined();
@@ -10,17 +58,26 @@ describe("addBadRequest", () => {
 
   it("should return a bad request response when queryParams are provided", () => {
     const result = addBadRequest({ someQuery: "value" });
-    expect(result).toEqual({ description: "Bad Request" });
+    expect(result).toEqual({
+      description: "Bad Request",
+      content: badRequestContent,
+    });
   });
 
   it("should return a bad request response when requestBody is provided", () => {
     const result = addBadRequest(undefined, { someBody: "value" });
-    expect(result).toEqual({ description: "Bad Request" });
+    expect(result).toEqual({
+      description: "Bad Request",
+      content: badRequestContent,
+    });
   });
 
   it("should return a bad request response when both queryParams and requestBody are provided", () => {
     const result = addBadRequest({ someQuery: "value" }, { someBody: "value" });
-    expect(result).toEqual({ description: "Bad Request" });
+    expect(result).toEqual({
+      description: "Bad Request",
+      content: badRequestContent,
+    });
   });
 });
 

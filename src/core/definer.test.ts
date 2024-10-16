@@ -216,6 +216,53 @@ describe("defineRoute", () => {
     if (!nextJsRouteHandler.apiData.responses) throw new Error("TEST ERROR");
     expect(nextJsRouteHandler.apiData.responses["400"]).toEqual({
       description: "Bad Request",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              errorType: {
+                enum: [
+                  "PARSE_FORM_DATA_ERROR",
+                  "PARSE_REQUEST_BODY_ERROR",
+                  "PARSE_SEARCH_PARAMS_ERROR",
+                ],
+                type: "string",
+              },
+              success: {
+                type: "boolean",
+              },
+              zodIssues: {
+                items: {
+                  type: "object",
+                  properties: {
+                    code: {
+                      type: "string",
+                    },
+                    message: {
+                      type: "string",
+                    },
+                    path: {
+                      items: {
+                        anyOf: [
+                          { type: "string" },
+                          { type: "number" },
+                        ],
+                      },
+                      type: "array",
+                    },
+                  },
+                  required: ["code", "path", "message"],
+                  additionalProperties: false,
+                },
+                type: "array",
+              },
+            },
+            required: ["success", "errorType", "zodIssues"],
+            additionalProperties: false,
+          },
+        },
+      },
     });
   });
 
