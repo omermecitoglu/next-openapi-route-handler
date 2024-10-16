@@ -19,6 +19,6 @@ export default function parseSearchParams<I, O>(source: URLSearchParams, schema?
       // eslint-disable-next-line no-console
       console.log((error as ZodError).issues);
     }
-    throw new Error("PARSE_SEARCH_PARAMS");
+    throw new Error("PARSE_SEARCH_PARAMS", { cause: (error as ZodError).issues });
   }
 }
