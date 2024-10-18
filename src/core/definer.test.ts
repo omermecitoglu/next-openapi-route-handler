@@ -246,9 +246,7 @@ describe("defineRoute", () => {
   });
 
   it("should use custom error handler correctly for an expected error", async () => {
-    mockRequest.json.mockImplementation(() => {
-      throw new SyntaxError("Unexpected end of JSON input");
-    });
+    mockRequest.json.mockRejectedValue(new SyntaxError("Unexpected end of JSON input"));
 
     const route = defineRoute({
       operationId: "postExample",
