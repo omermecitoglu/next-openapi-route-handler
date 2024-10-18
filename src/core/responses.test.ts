@@ -1,5 +1,6 @@
 import { describe, expect, it } from "@jest/globals";
 import type { ResponseDefinition } from "~/types/response";
+import zodIssue from "~/zod/issue.json";
 import { addBadRequest, bundleResponses } from "./responses";
 
 describe("addBadRequest", () => {
@@ -20,29 +21,8 @@ describe("addBadRequest", () => {
             type: "boolean",
           },
           zodIssues: {
-            items: {
-              type: "object",
-              properties: {
-                code: {
-                  type: "string",
-                },
-                message: {
-                  type: "string",
-                },
-                path: {
-                  items: {
-                    anyOf: [
-                      { type: "string" },
-                      { type: "number" },
-                    ],
-                  },
-                  type: "array",
-                },
-              },
-              required: ["code", "path", "message"],
-              additionalProperties: false,
-            },
             type: "array",
+            items: zodIssue,
           },
         },
         required: ["success", "errorType", "zodIssues"],

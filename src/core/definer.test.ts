@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 import { afterEach, describe, expect, it, jest } from "@jest/globals";
 import z from "zod";
+import zodIssue from "~/zod/issue.json";
 import defineRoute from "./definer";
 
 describe("defineRoute", () => {
@@ -233,29 +234,8 @@ describe("defineRoute", () => {
                 type: "boolean",
               },
               zodIssues: {
-                items: {
-                  type: "object",
-                  properties: {
-                    code: {
-                      type: "string",
-                    },
-                    message: {
-                      type: "string",
-                    },
-                    path: {
-                      items: {
-                        anyOf: [
-                          { type: "string" },
-                          { type: "number" },
-                        ],
-                      },
-                      type: "array",
-                    },
-                  },
-                  required: ["code", "path", "message"],
-                  additionalProperties: false,
-                },
                 type: "array",
+                items: zodIssue,
               },
             },
             required: ["success", "errorType", "zodIssues"],
