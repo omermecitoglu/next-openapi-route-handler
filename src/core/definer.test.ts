@@ -244,4 +244,69 @@ describe("defineRoute", () => {
 
     console.log = originalLog;
   });
+
+  it("should use custom error handler correctly for an expected error", async () => {
+    mockRequest.json.mockImplementation(() => {
+      throw new SyntaxError("Unexpected end of JSON input");
+    });
+
+    const route = defineRoute({
+      operationId: "postExample",
+      method: "POST",
+      summary: "Post Example",
+      description: "Posts example data",
+      tags: ["example"],
+      requestBody: z.object({ name: z.string() }),
+      action: mockAction,
+      responses: {
+        200: { description: "OK" },
+        418: { description: "I'm a teapot" },
+      },
+      handleErrors: (_errorType, _cause) => {
+        return new Response("I'm a teapot", { status: 418 });
+      },
+    });
+
+    const nextJsRouteHandler = route.POST;
+
+    const response = await nextJsRouteHandler(mockRequest as unknown as Request, {});
+    const bodyText = await response.text();
+
+    expect(response).toBeInstanceOf(Response);
+    expect(response.status).toBe(418);
+    expect(bodyText).toBe("I'm a teapot");
+  });
+
+  it("should use custom error handler correctly for an unexpected error", async () => {
+    const route = defineRoute({
+      operationId: "getExample",
+      method: "GET",
+      summary: "Get Example",
+      description: "Fetches example data",
+      tags: ["example"],
+      action: () => {
+        throw new Error("Critical error");
+      },
+      responses: {
+        200: { description: "OK" },
+        418: { description: "I'm a teapot" },
+        500: { description: "Backend developer is gonna get fired" },
+      },
+      handleErrors: (errorType, _cause) => {
+        if (errorType === "UNKNOWN_ERROR") {
+          return new Response("Backend developer is gonna get fired", { status: 500 });
+        }
+        return new Response(errorType, { status: 418 });
+      },
+    });
+
+    const nextJsRouteHandler = route.GET;
+
+    const response = await nextJsRouteHandler(mockRequest as unknown as Request, {});
+    const bodyText = await response.text();
+
+    expect(response).toBeInstanceOf(Response);
+    expect(response.status).toBe(500);
+    expect(bodyText).toBe("Backend developer is gonna get fired");
+  });
 });
