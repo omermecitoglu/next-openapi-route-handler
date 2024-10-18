@@ -54,6 +54,7 @@ The `defineRoute` function is used to define route handlers in a type-safe and s
 | hasFormData   | `boolean`                                                    | Is the request body a [FormData](https://developer.mozilla.org/en-US/docs/Web/API/FormData) |
 | action        | (source: [ActionSource](#action-source)) => Promise<[Response](https://developer.mozilla.org/en-US/docs/Web/API/Response)> | Function handling the request, receiving pathParams, queryParams, and requestBody. |
 | responses     | Record<`number`, [ResponseDefinition](#response-definition)> | Object defining possible responses, each with a description and optional content schema. |
+| handleErrors  | (errorType: string, issues?: [ZodIssues](https://zod.dev/ERROR_HANDLING?id=zodissue)[]) => Response | `(Optional)` Custom error handler can be provided to replace the default behavior. [See below](#example) |
 
 ### Action Source
 
@@ -97,6 +98,21 @@ export const { GET } = defineRoute({
   responses: {
     200: { description: "User details retrieved successfully", content: UserDTO },
     404: { description: "User not found" },
+  },
+  // optional 👇👇👇
+  handleErrors: (errorType, issues) => {
+    console.log(issues);
+    switch (errorType) {
+      "PARSE_FORM_DATA":
+      "PARSE_REQUEST_BODY":
+      "PARSE_SEARCH_PARAMS":
+        return new Response(null, { status: 400 });
+      "PARSE_PATH_PARAMS":
+        return new Response(null, { status: 404 });
+      "UNNECESSARY_PATH_PARAMS":
+      "UNKNOWN_ERROR":
+        return new Response(null, { status: 500 });
+    }
   },
 });
 ```
