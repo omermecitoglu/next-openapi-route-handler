@@ -1,3 +1,4 @@
+import { customErrorTypes } from "~/types/error";
 import type { HttpMethod } from "~/types/http";
 import type { RouteHandler, RouteMethodHandler } from "~/types/next";
 import type { ResponseDefinition } from "~/types/response";
@@ -6,7 +7,7 @@ import { resolveParams } from "./params";
 import parsePathParams from "./path-params";
 import { addBadRequest, bundleResponses } from "./responses";
 import parseSearchParams from "./search-params";
-import type { ZodType, ZodTypeDef } from "zod";
+import type { ZodIssue, ZodType, ZodTypeDef } from "zod";
 
 type ActionSource<PathParams, QueryParams, RequestBody> = {
   pathParams: PathParams,
@@ -44,6 +45,7 @@ type RouteOptions<
   queryParams?: ZodType<QueryParamsOutput, ZodTypeDef, QueryParamsInput>,
   action: (source: ActionSource<PathParamsOutput, QueryParamsOutput, RequestBodyOutput>) => Response | Promise<Response>,
   responses: Record<string, ResponseDefinition>,
+  handleErrors?: (errorType: typeof customErrorTypes[number] | "UNKNOWN_ERROR", issues?: ZodIssue[]) => Response,
 } & (RouteWithBody<RequestBodyInput, RequestBodyOutput> | RouteWithoutBody);
 
 function defineRoute<M extends HttpMethod, PPI, PPO, QPI, QPO, RBI, RBO>(input: RouteOptions<M, PPI, PPO, QPI, QPO, RBI, RBO>) {
@@ -55,6 +57,15 @@ function defineRoute<M extends HttpMethod, PPI, PPO, QPI, QPO, RBI, RBO>(input: 
       const body = await parseRequestBody(request, input.method, input.requestBody ?? undefined, input.hasFormData) as RBO;
       return await input.action({ pathParams, queryParams, body });
     } catch (error) {
+      if (input.handleErrors) {
+        if (error instanceof Error) {
+          const errorMessage = error.message as typeof customErrorTypes[number];
+          if (customErrorTypes.includes(errorMessage)) {
+            return input.handleErrors(errorMessage, error.cause as ZodIssue[]);
+          }
+        }
+        return input.handleErrors("UNKNOWN_ERROR");
+      }
       if (error instanceof Error) {
         switch (error.message) {
           case "PARSE_FORM_DATA":
