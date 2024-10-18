@@ -1,5 +1,6 @@
 import z from "zod";
 import type { ResponseDefinition } from "~/types/response";
+import { ZOD_ISSUE } from "~/zod/issue";
 import { resolveContent } from "./content";
 import convertToOpenAPI from "./zod-to-openapi";
 import type { ResponseObject, ResponsesObject } from "@omer-x/openapi-types/response";
@@ -17,11 +18,7 @@ export function addBadRequest(queryParams?: unknown, requestBody?: unknown) {
             "PARSE_REQUEST_BODY_ERROR",
             "PARSE_SEARCH_PARAMS_ERROR",
           ]),
-          zodIssues: z.object({
-            code: z.string(),
-            path: z.array(z.union([z.string(), z.number()])),
-            message: z.string(),
-          }).array(),
+          zodIssues: ZOD_ISSUE.array(),
         }), false),
       },
     },
