@@ -5,13 +5,13 @@ type RouteHandlerProps<PathParams> = {
   params?: PathParams,
 };
 
-export type RouteMethodHandler<PathParamsInput> = ((
-  request: Request,
+export type RouteMethodHandler<PathParamsInput, Req, Res> = ((
+  request: Req,
   props: RouteHandlerProps<PathParamsInput>
-) => Promise<Response>) & {
+) => Promise<Res>) & {
   apiData?: OperationObject,
 };
 
-export type RouteHandler<HM extends HttpMethod, PathParamsInput> = {
-  [key in HM]: RouteMethodHandler<PathParamsInput>;
+export type RouteHandler<HM extends HttpMethod, PathParamsInput, Req, Res> = {
+  [key in HM]: RouteMethodHandler<PathParamsInput, Req, Res>;
 };
