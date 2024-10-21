@@ -45,7 +45,7 @@ type RouteOptions<
   tags: string[],
   pathParams?: ZodType<PathParamsOutput, ZodTypeDef, PathParamsInput>,
   queryParams?: ZodType<QueryParamsOutput, ZodTypeDef, QueryParamsInput>,
-  action: (source: ActionSource<PathParamsOutput, QueryParamsOutput, RequestBodyOutput>) => Response | Promise<Res>,
+  action: (source: ActionSource<PathParamsOutput, QueryParamsOutput, RequestBodyOutput>, request: Req) => Response | Promise<Res>,
   responses: Record<string, ResponseDefinition>,
   handleErrors?: (errorType: typeof customErrorTypes[number] | "UNKNOWN_ERROR", issues?: ZodIssue[]) => Res,
   middleware?: (hander: RouteMethodHandler<PathParamsInput, Req, Res>) =>
@@ -59,7 +59,7 @@ function defineRoute<M extends HttpMethod, PPI, PPO, QPI, QPO, RBI, RBO, MwReq e
       const pathParams = parsePathParams(props.params, input.pathParams) as PPO;
       const queryParams = parseSearchParams(searchParams, input.queryParams) as QPO;
       const body = await parseRequestBody(request, input.method, input.requestBody ?? undefined, input.hasFormData) as RBO;
-      return await input.action({ pathParams, queryParams, body }) as MwRes;
+      return await input.action({ pathParams, queryParams, body }, request) as MwRes;
     } catch (error) {
       if (input.handleErrors) {
         if (error instanceof Error) {
