@@ -31,13 +31,13 @@ describe("defineRoute", () => {
     mockAction.mockResolvedValue(new Response("Success"));
 
     const nextJsRouteHandler = route.GET;
-    const response = await nextJsRouteHandler(mockRequest as unknown as Request, {});
+    const response = await nextJsRouteHandler(mockRequest as unknown as Request);
 
     expect(mockAction).toHaveBeenCalledWith({
       pathParams: null,
       queryParams: null,
       body: null,
-    });
+    }, mockRequest);
 
     expect(response).toBeInstanceOf(Response);
     expect(response.status).toBe(200);
@@ -72,7 +72,7 @@ describe("defineRoute", () => {
       pathParams: { id: "123" },
       queryParams: null,
       body: { name: "Test" },
-    });
+    }, mockRequest);
 
     expect(response).toBeInstanceOf(Response);
     expect(response.status).toBe(201);
@@ -100,7 +100,7 @@ describe("defineRoute", () => {
     });
 
     const nextJsRouteHandler = route.POST;
-    const response = await nextJsRouteHandler(mockRequest as unknown as Request, {});
+    const response = await nextJsRouteHandler(mockRequest as unknown as Request);
 
     expect(response).toBeInstanceOf(Response);
     expect(response.status).toBe(400);
@@ -133,7 +133,7 @@ describe("defineRoute", () => {
     });
 
     const nextJsRouteHandler = route.PUT;
-    const response = await nextJsRouteHandler(mockRequest as unknown as Request, {});
+    const response = await nextJsRouteHandler(mockRequest as unknown as Request);
 
     expect(response).toBeInstanceOf(Response);
     expect(response.status).toBe(400);
@@ -149,7 +149,11 @@ describe("defineRoute", () => {
       description: "Fetches example data",
       tags: ["example"],
       action: () => {
-        throw new Error("Internal Error");
+        // eslint-disable-next-line no-constant-condition
+        if (1 + 1 === 2) {
+          throw new Error("Internal Error");
+        }
+        return Response.json({ message: "Internal Error" }, { status: 500 });
       },
       responses: {
         200: { description: "OK" },
@@ -157,7 +161,7 @@ describe("defineRoute", () => {
     });
 
     const nextJsRouteHandler = route.GET;
-    const response = await nextJsRouteHandler(mockRequest as unknown as Request, {});
+    const response = await nextJsRouteHandler(mockRequest as unknown as Request);
 
     expect(response).toBeInstanceOf(Response);
     expect(response.status).toBe(500);
@@ -238,7 +242,7 @@ describe("defineRoute", () => {
 
     const nextJsRouteHandler = route.GET;
 
-    await nextJsRouteHandler(mockRequest as unknown as Request, {});
+    await nextJsRouteHandler(mockRequest as unknown as Request);
 
     expect(console.log).toHaveBeenCalledWith(expect.stringContaining("You tried to add pathParams to a route"));
 
@@ -267,7 +271,7 @@ describe("defineRoute", () => {
 
     const nextJsRouteHandler = route.POST;
 
-    const response = await nextJsRouteHandler(mockRequest as unknown as Request, {});
+    const response = await nextJsRouteHandler(mockRequest as unknown as Request);
     const bodyText = await response.text();
 
     expect(response).toBeInstanceOf(Response);
@@ -300,7 +304,7 @@ describe("defineRoute", () => {
 
     const nextJsRouteHandler = route.GET;
 
-    const response = await nextJsRouteHandler(mockRequest as unknown as Request, {});
+    const response = await nextJsRouteHandler(mockRequest as unknown as Request);
     const bodyText = await response.text();
 
     expect(response).toBeInstanceOf(Response);
