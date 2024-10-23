@@ -45,14 +45,25 @@ type RouteOptions<
   tags: string[],
   pathParams?: ZodType<PathParamsOutput, ZodTypeDef, PathParamsInput>,
   queryParams?: ZodType<QueryParamsOutput, ZodTypeDef, QueryParamsInput>,
-  action: (source: ActionSource<PathParamsOutput, QueryParamsOutput, RequestBodyOutput>, request: Req) => Response | Promise<Res>,
+  action: (
+    source: ActionSource<PathParamsOutput, QueryParamsOutput, RequestBodyOutput>,
+    request: Req
+  ) => Res | Promise<Res>,
   responses: Record<string, ResponseDefinition>,
-  handleErrors?: (errorType: typeof customErrorTypes[number] | "UNKNOWN_ERROR", issues?: ZodIssue[]) => Res,
-  middleware?: (hander: RouteMethodHandler<PathParamsInput, Req, Res>) =>
-  RouteMethodHandler<PathParamsInput, Req, Res>,
+  handleErrors?: (
+    errorType: typeof customErrorTypes[number] | "UNKNOWN_ERROR",
+    issues?: ZodIssue[]
+  ) => Res,
+  middleware?: (
+    hander: RouteMethodHandler<PathParamsInput, Req, Res>
+  ) => RouteMethodHandler<PathParamsInput, Req, Res>,
 } & (RouteWithBody<RequestBodyInput, RequestBodyOutput> | RouteWithoutBody);
 
-function defineRoute<M extends HttpMethod, PPI, PPO, QPI, QPO, RBI, RBO, MwReq extends Request, MwRes extends Response>(input: RouteOptions<M, PPI, PPO, QPI, QPO, RBI, RBO, MwReq, MwRes>) {
+function defineRoute<
+  M extends HttpMethod, PPI, PPO, QPI, QPO, RBI, RBO, MwReq extends Request, MwRes extends Response,
+>(input: RouteOptions<
+  M, PPI, PPO, QPI, QPO, RBI, RBO, MwReq, MwRes
+>) {
   const handler: RouteMethodHandler<PPI, MwReq, MwRes> = async (request, context) => {
     try {
       const { searchParams } = new URL(request.url);
