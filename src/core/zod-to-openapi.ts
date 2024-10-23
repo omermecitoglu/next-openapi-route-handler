@@ -1,4 +1,4 @@
-import zodToJsonSchema from "zod-to-json-schema";
+import { zodToJsonSchema } from "zod-to-json-schema";
 import { isFile } from "~/utils/zod-schema";
 import type { SchemaObject } from "@omer-x/openapi-types/schema";
 import type { ZodObject, ZodType } from "zod";
