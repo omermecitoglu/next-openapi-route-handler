@@ -53,10 +53,10 @@ type RouteOptions<
 } & (RouteWithBody<RequestBodyInput, RequestBodyOutput> | RouteWithoutBody);
 
 function defineRoute<M extends HttpMethod, PPI, PPO, QPI, QPO, RBI, RBO, MwReq extends Request, MwRes extends Response>(input: RouteOptions<M, PPI, PPO, QPI, QPO, RBI, RBO, MwReq, MwRes>) {
-  const handler: RouteMethodHandler<PPI, MwReq, MwRes> = async (request, props) => {
+  const handler: RouteMethodHandler<PPI, MwReq, MwRes> = async (request, context) => {
     try {
       const { searchParams } = new URL(request.url);
-      const pathParams = parsePathParams(props.params, input.pathParams) as PPO;
+      const pathParams = parsePathParams(context?.params, input.pathParams) as PPO;
       const queryParams = parseSearchParams(searchParams, input.queryParams) as QPO;
       const body = await parseRequestBody(request, input.method, input.requestBody ?? undefined, input.hasFormData) as RBO;
       return await input.action({ pathParams, queryParams, body }, request) as MwRes;
