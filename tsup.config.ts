@@ -14,7 +14,7 @@ export default defineConfig({
   external: [
   ],
   noExternal: [
-    // "zod-to-json-schema", // uncomment this during development
+    "zod-to-json-schema",
   ],
   esbuildPlugins: [
   ],
