@@ -15,6 +15,7 @@ export default function convertToOpenAPI(schema: ZodType<unknown>, isArray: bool
         result.properties[propName] = {
           type: "string",
           format: "binary",
+          description: prop.description,
           // contentEncoding: "base64", // swagger-ui-react doesn't support this
         };
       }
