@@ -12,6 +12,12 @@ export type RouteMethodHandler<PathParamsInput, Req, Res> = ((
   apiData?: OperationObject,
 };
 
-export type RouteHandler<HM extends HttpMethod, PathParamsInput, Req, Res> = {
-  [key in HM]: RouteMethodHandler<PathParamsInput, Req, Res>;
-};
+export type RouteHandler<
+  HM extends HttpMethod,
+  PathParamsInput,
+  Req,
+  Res,
+> = Record<
+  HM,
+  RouteMethodHandler<PathParamsInput, Req, Res>
+>;
