@@ -7,6 +7,7 @@ import { resolveParams } from "./params";
 import parsePathParams from "./path-params";
 import { addBadRequest, bundleResponses } from "./responses";
 import parseSearchParams from "./search-params";
+import type { OperationObject } from "@omer-x/openapi-types/operation";
 import type { ZodIssue, ZodType, ZodTypeDef } from "zod";
 
 type ActionSource<PathParams, QueryParams, RequestBody> = {
@@ -57,6 +58,7 @@ type RouteOptions<
   middleware?: (
     hander: RouteMethodHandler<PathParamsInput, Req, Res>
   ) => RouteMethodHandler<PathParamsInput, Req, Res>,
+  security?: OperationObject["security"],
 } & (RouteWithBody<RequestBodyInput, RequestBodyOutput> | RouteWithoutBody);
 
 function defineRoute<
@@ -125,6 +127,7 @@ function defineRoute<
     parameters: parameters.length ? parameters : undefined,
     requestBody: resolveRequestBody(input.requestBody ?? undefined, input.hasFormData),
     responses: responses,
+    security: input.security,
   };
 
   if (input.middleware) {
