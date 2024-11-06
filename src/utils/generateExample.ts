@@ -10,14 +10,14 @@ export default function generateExample<I, O>(
     return schema._def.defaultValue() as unknown as O;
   }
   if (schema instanceof ZodOptional) {
-    const innerSchema = schema._def.innerType;
+    const innerSchema = schema.unwrap();
     if (ignoreOptionals) {
       return undefined as unknown as O;
     }
     return generateExample(innerSchema, ignoreOptionals, keyName);
   }
   if (schema instanceof ZodNullable) {
-    const innerSchema = schema._def.innerType;
+    const innerSchema = schema.unwrap();
     return (generateExample(innerSchema, ignoreOptionals, keyName, true) ?? null) as unknown as O;
   }
   if (schema instanceof ZodObject) {
@@ -27,7 +27,7 @@ export default function generateExample<I, O>(
     return Object.fromEntries(entries) as unknown as O;
   }
   if (schema instanceof ZodEnum) {
-    const values = schema._def.values;
+    const values = schema.options;
     if (values.length) {
       return values[0] as unknown as O;
     }
