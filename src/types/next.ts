@@ -1,3 +1,4 @@
+import type { ExampleStrategy } from "./example";
 import type { HttpMethod } from "./http";
 import type { OperationObject } from "@omer-x/openapi-types/operation";
 
@@ -10,6 +11,7 @@ export type RouteMethodHandler<PathParamsInput, Req, Res> = ((
   context?: RouteHandlerContext<PathParamsInput>
 ) => Promise<Res>) & {
   apiData?: OperationObject,
+  exampleStrategy?: ExampleStrategy,
 };
 
 export type RouteHandler<
