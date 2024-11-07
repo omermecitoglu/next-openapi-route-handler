@@ -1,10 +1,14 @@
 import { ZodArray, ZodBigInt, ZodBoolean, ZodEnum, ZodNull, ZodNullable, ZodNumber, ZodObject, ZodOptional, ZodString, type ZodType, type ZodTypeDef, ZodUndefined, ZodUnion } from "zod";
 
+type ExampleGeneratorOptions = {
+  keyName?: string,
+  nullable: boolean,
+};
+
 export default function generateExample<I, O>(
   schema: ZodType<O, ZodTypeDef, I>,
   ignoreOptionals: boolean,
-  keyName?: string,
-  nullable: boolean = false,
+  generatorOptions: ExampleGeneratorOptions = { nullable: false },
 ): O {
   if ("defaultValue" in schema._def && typeof schema._def.defaultValue === "function") {
     return schema._def.defaultValue() as unknown as O;
@@ -14,15 +18,15 @@ export default function generateExample<I, O>(
     if (ignoreOptionals) {
       return undefined as unknown as O;
     }
-    return generateExample(innerSchema, ignoreOptionals, keyName);
+    return generateExample(innerSchema, ignoreOptionals, generatorOptions);
   }
   if (schema instanceof ZodNullable) {
     const innerSchema = schema.unwrap();
-    return (generateExample(innerSchema, ignoreOptionals, keyName, true) ?? null) as unknown as O;
+    return (generateExample(innerSchema, ignoreOptionals, { ...generatorOptions, nullable: true }) ?? null) as unknown as O;
   }
   if (schema instanceof ZodObject) {
-    const entries = Object.entries(schema.shape).map(([key, childSchema]) => {
-      return [key, generateExample(childSchema as ZodType, ignoreOptionals, key)] as const;
+    const entries = Object.entries(schema.shape).map(([keyName, childSchema]) => {
+      return [keyName, generateExample(childSchema as ZodType, ignoreOptionals, { ...generatorOptions, keyName })] as const;
     }).filter(([_, value]) => typeof value !== "undefined");
     return Object.fromEntries(entries) as unknown as O;
   }
@@ -91,26 +95,26 @@ export default function generateExample<I, O>(
       }
       return example.join("") as unknown as O;
     }
-    if (keyName) {
-      return `example ${keyName}` as unknown as O;
+    if (generatorOptions.keyName) {
+      return `example ${generatorOptions.keyName}` as unknown as O;
     }
-    if (nullable) {
+    if (generatorOptions.nullable) {
       return "example nullable string" as unknown as O;
     }
     return "example string" as unknown as O;
   }
   if (schema instanceof ZodArray) {
     if (schema._def.type instanceof ZodUnion) {
-      const options = schema._def.type.options as ZodType[];
-      return options.map(option => generateExample(option, ignoreOptionals)) as unknown as O;
+      const unionOptions = schema._def.type.options as ZodType[];
+      return unionOptions.map(o => generateExample(o, ignoreOptionals, generatorOptions)) as unknown as O;
     }
-    return [generateExample(schema._def.type, ignoreOptionals)] as unknown as O;
+    return [generateExample(schema._def.type, ignoreOptionals, generatorOptions)] as unknown as O;
   }
   if (schema instanceof ZodUnion) {
-    const options = schema.options as ZodType[];
-    const firstItem = options[0];
+    const unionOptions = schema.options as ZodType[];
+    const firstItem = unionOptions[0];
     if (firstItem) {
-      return generateExample(firstItem, ignoreOptionals);
+      return generateExample(firstItem, ignoreOptionals, generatorOptions);
     }
     return undefined as unknown as O;
   }
