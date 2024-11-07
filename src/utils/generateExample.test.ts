@@ -101,6 +101,11 @@ describe("generateExample", () => {
     expect(generateExample(schema, true)).toBe(undefined);
   });
 
+  it("should generate an example from a zod array", () => {
+    expect(generateExample(z.string().array(), true)).toStrictEqual(["example string"]);
+    expect(generateExample(z.number().array(), true)).toStrictEqual([1]);
+  });
+
   it("should throw an error from an unknown zod schema", () => {
     const schema = z.unknown();
     expect(() => generateExample(schema, false)).toThrow("Unknown zod schema");
