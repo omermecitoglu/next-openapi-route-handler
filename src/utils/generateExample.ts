@@ -8,6 +8,7 @@ type ExampleGeneratorOptions = {
 export default function generateExample<I, O>(
   schema: ZodType<O, ZodTypeDef, I>,
   ignoreOptionals: boolean,
+  strict: boolean,
   generatorOptions: ExampleGeneratorOptions = { nullable: false },
 ): O {
   if ("defaultValue" in schema._def && typeof schema._def.defaultValue === "function") {
@@ -18,15 +19,17 @@ export default function generateExample<I, O>(
     if (ignoreOptionals) {
       return undefined as unknown as O;
     }
-    return generateExample(innerSchema, ignoreOptionals, generatorOptions);
+    return generateExample(innerSchema, ignoreOptionals, strict, generatorOptions);
   }
   if (schema instanceof ZodNullable) {
     const innerSchema = schema.unwrap();
-    return (generateExample(innerSchema, ignoreOptionals, { ...generatorOptions, nullable: true }) ?? null) as unknown as O;
+    const innerExample = generateExample(innerSchema, ignoreOptionals, strict, { ...generatorOptions, nullable: true });
+    return (innerExample ?? null) as unknown as O;
   }
   if (schema instanceof ZodObject) {
     const entries = Object.entries(schema.shape).map(([keyName, childSchema]) => {
-      return [keyName, generateExample(childSchema as ZodType, ignoreOptionals, { ...generatorOptions, keyName })] as const;
+      const childExample = generateExample(childSchema as ZodType, ignoreOptionals, strict, { ...generatorOptions, keyName });
+      return [keyName, childExample] as const;
     }).filter(([_, value]) => typeof value !== "undefined");
     return Object.fromEntries(entries) as unknown as O;
   }
@@ -106,17 +109,20 @@ export default function generateExample<I, O>(
   if (schema instanceof ZodArray) {
     if (schema._def.type instanceof ZodUnion) {
       const unionOptions = schema._def.type.options as ZodType[];
-      return unionOptions.map(o => generateExample(o, ignoreOptionals, generatorOptions)) as unknown as O;
+      return unionOptions.map(o => generateExample(o, ignoreOptionals, strict, generatorOptions)) as unknown as O;
     }
-    return [generateExample(schema._def.type, ignoreOptionals, generatorOptions)] as unknown as O;
+    return [generateExample(schema._def.type, ignoreOptionals, strict, generatorOptions)] as unknown as O;
   }
   if (schema instanceof ZodUnion) {
     const unionOptions = schema.options as ZodType[];
     const firstItem = unionOptions[0];
     if (firstItem) {
-      return generateExample(firstItem, ignoreOptionals, generatorOptions);
+      return generateExample(firstItem, ignoreOptionals, strict, generatorOptions);
     }
     return undefined as unknown as O;
   }
-  throw new Error("Unknown zod schema");
+  if (strict) {
+    throw new Error("Unknown zod schema");
+  }
+  return undefined as unknown as O;
 }
