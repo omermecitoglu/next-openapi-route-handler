@@ -5,12 +5,12 @@ import type { RequestBodyObject } from "@omer-x/openapi-types/request-body";
 
 describe("resolveContent", () => {
   it("should return undefined if source is not provided", () => {
-    const result = resolveContent(undefined);
+    const result = resolveContent("none", undefined);
     expect(result).toBeUndefined();
   });
 
   it("should create content for a string schema reference", () => {
-    const result = resolveContent("User", false);
+    const result = resolveContent("none", "User", false);
 
     const expectedContent = {
       "application/json": {
@@ -29,7 +29,7 @@ describe("resolveContent", () => {
       age: z.number(),
     });
 
-    const result = resolveContent(zodSchema, false);
+    const result = resolveContent("none", zodSchema, false);
 
     const expectedContent = {
       "application/json": {
@@ -53,7 +53,7 @@ describe("resolveContent", () => {
   });
 
   it("should create multipart/form-data content when isFormData is true", () => {
-    const result = resolveContent("User", false, true);
+    const result = resolveContent("none", "User", false, true);
 
     const expectedContent = {
       "multipart/form-data": {

@@ -27,7 +27,7 @@ describe("addBadRequest", () => {
 describe("bundleResponses", () => {
   it("should return an empty when no responses are provided", () => {
     const collection: Record<string, ResponseDefinition> = {};
-    const result = bundleResponses(collection);
+    const result = bundleResponses(collection, "none");
     expect(result).toEqual({});
   });
 
@@ -37,7 +37,7 @@ describe("bundleResponses", () => {
       404: { description: "Not Found", content: "SomeOtherContent", isArray: true },
     };
 
-    const result = bundleResponses(collection);
+    const result = bundleResponses(collection, "none");
 
     expect(result).toEqual({
       200: {
