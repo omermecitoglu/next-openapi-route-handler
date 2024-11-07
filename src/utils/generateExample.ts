@@ -1,4 +1,4 @@
-import { ZodArray, ZodBigInt, ZodBoolean, ZodEnum, ZodNull, ZodNullable, ZodNumber, ZodObject, ZodOptional, ZodString, type ZodType, type ZodTypeDef, ZodUndefined } from "zod";
+import { ZodArray, ZodBigInt, ZodBoolean, ZodEnum, ZodNull, ZodNullable, ZodNumber, ZodObject, ZodOptional, ZodString, type ZodType, type ZodTypeDef, ZodUndefined, ZodUnion } from "zod";
 
 export default function generateExample<I, O>(
   schema: ZodType<O, ZodTypeDef, I>,
@@ -100,7 +100,19 @@ export default function generateExample<I, O>(
     return "example string" as unknown as O;
   }
   if (schema instanceof ZodArray) {
+    if (schema._def.type instanceof ZodUnion) {
+      const options = schema._def.type.options as ZodType[];
+      return options.map(option => generateExample(option, ignoreOptionals)) as unknown as O;
+    }
     return [generateExample(schema._def.type, ignoreOptionals)] as unknown as O;
+  }
+  if (schema instanceof ZodUnion) {
+    const options = schema.options as ZodType[];
+    const firstItem = options[0];
+    if (firstItem) {
+      return generateExample(firstItem, ignoreOptionals);
+    }
+    return undefined as unknown as O;
   }
   throw new Error("Unknown zod schema");
 }

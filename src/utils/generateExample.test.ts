@@ -1,5 +1,5 @@
 import { describe, expect, it } from "@jest/globals";
-import z from "zod";
+import z, { type ZodType } from "zod";
 import generateExample from "./generateExample";
 
 describe("generateExample", () => {
@@ -104,6 +104,14 @@ describe("generateExample", () => {
   it("should generate an example from a zod array", () => {
     expect(generateExample(z.string().array(), true)).toStrictEqual(["example string"]);
     expect(generateExample(z.number().array(), true)).toStrictEqual([1]);
+    expect(generateExample(z.array(z.union([z.string(), z.number()])), true)).toStrictEqual(["example string", 1]);
+  });
+
+  it("should generate an example from a zod union", () => {
+    const schema = z.union([z.string(), z.number()]);
+    expect(generateExample(schema, true)).toBe("example string");
+    const emptyUnion = z.union([] as unknown as [ZodType, ZodType]);
+    expect(generateExample(emptyUnion, true)).toBe(undefined);
   });
 
   it("should throw an error from an unknown zod schema", () => {
