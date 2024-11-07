@@ -1,4 +1,5 @@
 import { customErrorTypes } from "~/types/error";
+import type { ExampleStrategy } from "~/types/example";
 import type { HttpMethod } from "~/types/http";
 import type { RouteHandler, RouteMethodHandler } from "~/types/next";
 import type { ResponseDefinition } from "~/types/response";
@@ -59,6 +60,7 @@ type RouteOptions<
     hander: RouteMethodHandler<PathParamsInput, Req, Res>
   ) => RouteMethodHandler<PathParamsInput, Req, Res>,
   security?: OperationObject["security"],
+  exampleStrategy?: ExampleStrategy,
 } & (RouteWithBody<RequestBodyInput, RequestBodyOutput> | RouteWithoutBody);
 
 function defineRoute<
