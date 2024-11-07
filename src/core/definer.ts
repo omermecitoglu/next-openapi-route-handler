@@ -127,7 +127,7 @@ function defineRoute<
     description: input.description,
     tags: input.tags,
     parameters: parameters.length ? parameters : undefined,
-    requestBody: resolveRequestBody(input.requestBody ?? undefined, input.hasFormData),
+    requestBody: resolveRequestBody(input.exampleStrategy ?? "none", input.requestBody ?? undefined, input.hasFormData),
     responses: responses,
     security: input.security,
   };
