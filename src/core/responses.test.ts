@@ -1,5 +1,5 @@
 import { describe, expect, it } from "@jest/globals";
-import type { ResponseDefinition } from "~/types/response";
+import type { ResponseCollection } from "~/types/response";
 import { addBadRequest, bundleResponses } from "./responses";
 
 describe("addBadRequest", () => {
@@ -26,13 +26,11 @@ describe("addBadRequest", () => {
 
 describe("bundleResponses", () => {
   it("should return an empty when no responses are provided", () => {
-    const collection: Record<string, ResponseDefinition> = {};
-    const result = bundleResponses(collection);
-    expect(result).toEqual({});
+    expect(bundleResponses({})).toEqual({});
   });
 
   it("should return bundled responses with correct descriptions and resolved content", () => {
-    const collection: Record<string, ResponseDefinition> = {
+    const collection: ResponseCollection<Record<number, unknown>> = {
       200: { description: "Success", content: "SomeContent", isArray: false },
       404: { description: "Not Found", content: "SomeOtherContent", isArray: true },
     };
