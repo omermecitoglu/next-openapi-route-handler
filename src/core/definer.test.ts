@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 import { afterEach, describe, expect, it, jest } from "@jest/globals";
 import z from "zod";
+import type { RouteMethodHandler } from "~/types/next";
 import defineRoute from "./definer";
 
 describe("defineRoute", () => {
@@ -310,5 +311,38 @@ describe("defineRoute", () => {
     expect(response).toBeInstanceOf(Response);
     expect(response.status).toBe(500);
     expect(bodyText).toBe("Backend developer is gonna get fired");
+  });
+
+  it("should apply middleware to the route handler", async () => {
+    type Handler = RouteMethodHandler<unknown, Request, Response>;
+    const mockMiddleware = jest.fn((handler: Handler) => async (request: Request, context?: { params: unknown }) => {
+      await Promise.resolve();
+      return handler(request, context);
+    });
+
+    const route = defineRoute({
+      operationId: "middlewareExample",
+      method: "GET",
+      summary: "Middleware Example",
+      description: "Example route with middleware applied",
+      tags: ["example"],
+      action: (source, _request) => {
+        // Confirm middleware effect in action
+        expect(source).toHaveProperty("pathParams", null);
+        return new Response("Middleware success", { status: 200 });
+      },
+      responses: {
+        200: { description: "OK" },
+      },
+      middleware: mockMiddleware,
+    });
+
+    const nextJsRouteHandler = route.GET;
+    const response = await nextJsRouteHandler(mockRequest as unknown as Request);
+
+    expect(response).toBeInstanceOf(Response);
+    expect(response.status).toBe(200);
+    expect(await response.text()).toBe("Middleware success");
+    expect(mockMiddleware).toHaveBeenCalled();
   });
 });
