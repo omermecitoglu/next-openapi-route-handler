@@ -1,10 +1,8 @@
-import type { ExampleStrategy } from "~/types/example";
-import { injectExample } from "./example";
 import convertToOpenAPI from "./zod-to-openapi";
 import type { ParameterObject } from "@omer-x/openapi-types/parameter";
 import type { ZodType } from "zod";
 
-export function resolveParams(kind: ParameterObject["in"], exampleStrategy: ExampleStrategy, source?: ZodType<unknown>) {
+export function resolveParams(kind: ParameterObject["in"], source?: ZodType<unknown>) {
   if (!source) return [];
   const schema = convertToOpenAPI(source, false);
   if (!("properties" in schema)) throw new Error("Invalid object schema");
@@ -15,6 +13,5 @@ export function resolveParams(kind: ParameterObject["in"], exampleStrategy: Exam
     required: schema.required?.includes(name) ?? false,
     description: definition.description,
     schema: definition,
-    ...injectExample(exampleStrategy, source, false),
   }));
 }

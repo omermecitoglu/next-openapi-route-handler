@@ -110,8 +110,8 @@ function defineRoute<
   };
 
   const parameters = [
-    ...resolveParams("path", input.exampleStrategy ?? "none", input.pathParams),
-    ...resolveParams("query", input.exampleStrategy ?? "none", input.queryParams),
+    ...resolveParams("path", input.pathParams),
+    ...resolveParams("query", input.queryParams),
   ];
 
   const responses = bundleResponses(input.responses);

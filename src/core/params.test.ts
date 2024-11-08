@@ -5,14 +5,14 @@ import type { ParameterObject } from "@omer-x/openapi-types/parameter";
 
 describe("resolveParams", () => {
   it("should return an empty array if source is not provided", () => {
-    const result = resolveParams("query", "none", undefined);
+    const result = resolveParams("query", undefined);
     expect(result).toEqual([]);
   });
 
   it("should throw an error if the schema does not have properties", () => {
     const zodSchema = z.string();
 
-    expect(() => resolveParams("query", "none", zodSchema)).toThrow("Invalid object schema");
+    expect(() => resolveParams("query", zodSchema)).toThrow("Invalid object schema");
   });
 
   it("should resolve parameters for a valid Zod object schema", () => {
@@ -21,7 +21,7 @@ describe("resolveParams", () => {
       includeDetails: z.boolean().optional().describe("Whether to include user details"),
     });
 
-    const result = resolveParams("query", "none", zodSchema);
+    const result = resolveParams("query", zodSchema);
 
     const expectedParams: ParameterObject[] = [
       {
@@ -55,7 +55,7 @@ describe("resolveParams", () => {
       includeDetails: z.boolean().optional().describe("Whether to include user details"),
     });
 
-    const result = resolveParams("query", "none", zodSchema);
+    const result = resolveParams("query", zodSchema);
 
     const expectedParams: ParameterObject[] = [
       {
