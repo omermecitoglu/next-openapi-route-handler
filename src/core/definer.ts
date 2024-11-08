@@ -132,8 +132,6 @@ function defineRoute<
     security: input.security,
   };
 
-  handler.exampleStrategy = input.exampleStrategy;
-
   if (input.middleware) {
     return { [input.method]: input.middleware(handler) } as RouteHandler<M, PPI, MwReq, MwRes>;
   }
