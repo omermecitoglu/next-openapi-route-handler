@@ -6,7 +6,7 @@ import { parseRequestBody, resolveRequestBody } from "./body";
 
 describe("resolveRequestBody", () => {
   it("should return undefined when no source is provided", () => {
-    const result = resolveRequestBody("none");
+    const result = resolveRequestBody();
     expect(result).toBeUndefined();
   });
 
@@ -15,7 +15,7 @@ describe("resolveRequestBody", () => {
       name: z.string(),
     });
 
-    const result = resolveRequestBody("none", schema);
+    const result = resolveRequestBody(schema);
 
     expect(result).toEqual({
       required: true,
@@ -39,7 +39,7 @@ describe("resolveRequestBody", () => {
       file: z.instanceof(File),
     });
 
-    const result = resolveRequestBody("none", schema, true);
+    const result = resolveRequestBody(schema, true);
 
     expect(result).toEqual({
       required: true,

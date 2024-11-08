@@ -1,4 +1,3 @@
-import type { ExampleStrategy } from "~/types/example";
 import type { HttpMethod } from "~/types/http";
 import type { FixedRequest } from "~/types/request";
 import { resolveContent } from "./content";
@@ -6,12 +5,12 @@ import { safeParse } from "./zod-error-handler";
 import type { RequestBodyObject } from "@omer-x/openapi-types/request-body";
 import type { ZodError, ZodType, ZodTypeDef } from "zod";
 
-export function resolveRequestBody<I, O>(exampleStrategy: ExampleStrategy, source?: ZodType<O, ZodTypeDef, I> | string, isFormData: boolean = false) {
+export function resolveRequestBody<I, O>(source?: ZodType<O, ZodTypeDef, I> | string, isFormData: boolean = false) {
   if (!source) return undefined;
   return {
     // description: "", // how to fill this?
     required: true,
-    content: resolveContent(exampleStrategy, source, false, isFormData),
+    content: resolveContent(source, false, isFormData),
   } as RequestBodyObject;
 }
 
