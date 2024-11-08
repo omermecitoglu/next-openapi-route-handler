@@ -114,7 +114,7 @@ function defineRoute<
     ...resolveParams("query", input.exampleStrategy ?? "none", input.queryParams),
   ];
 
-  const responses = bundleResponses(input.responses, input.exampleStrategy ?? "none");
+  const responses = bundleResponses(input.responses);
   const response400 = addBadRequest(input.queryParams, input.requestBody);
   if (response400) {
     responses["400"] = response400;
