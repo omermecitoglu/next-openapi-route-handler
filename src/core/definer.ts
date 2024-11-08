@@ -19,12 +19,14 @@ type ActionSource<PathParams, QueryParams, RequestBody> = {
 type RouteWithoutBody = {
   method: Extract<HttpMethod, "GET" | "DELETE" | "HEAD">,
   requestBody?: null,
+  requestBodyExample?: undefined,
   hasFormData?: boolean,
 };
 
 type RouteWithBody<I, O> = {
   method: Exclude<HttpMethod, "GET" | "DELETE" | "HEAD">,
   requestBody?: ZodType<O, ZodTypeDef, I> | string,
+  requestBodyExample?: NoInfer<O>,
   hasFormData?: boolean,
 };
 
@@ -125,7 +127,7 @@ function defineRoute<
     description: input.description,
     tags: input.tags,
     parameters: parameters.length ? parameters : undefined,
-    requestBody: resolveRequestBody(input.requestBody ?? undefined, input.hasFormData),
+    requestBody: resolveRequestBody(input.requestBody ?? undefined, input.hasFormData, input.requestBodyExample),
     responses: responses,
     security: input.security,
   };

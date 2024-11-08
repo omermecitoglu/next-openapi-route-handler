@@ -5,12 +5,16 @@ import { safeParse } from "./zod-error-handler";
 import type { RequestBodyObject } from "@omer-x/openapi-types/request-body";
 import type { ZodError, ZodType, ZodTypeDef } from "zod";
 
-export function resolveRequestBody<I, O>(source?: ZodType<O, ZodTypeDef, I> | string, isFormData: boolean = false) {
+export function resolveRequestBody<I, O>(
+  source?: ZodType<O, ZodTypeDef, I> | string,
+  isFormData: boolean = false,
+  customExample?: O,
+) {
   if (!source) return undefined;
   return {
     // description: "", // how to fill this?
     required: true,
-    content: resolveContent(source, false, isFormData),
+    content: resolveContent(source, false, isFormData, customExample),
   } as RequestBodyObject;
 }
 
