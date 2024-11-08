@@ -1,7 +1,7 @@
 import { customErrorTypes } from "~/types/error";
 import type { HttpMethod } from "~/types/http";
 import type { RouteHandler, RouteMethodHandler } from "~/types/next";
-import type { ResponseDefinition } from "~/types/response";
+import type { ResponseCollection } from "~/types/response";
 import { parseRequestBody, resolveRequestBody } from "./body";
 import { resolveParams } from "./params";
 import parsePathParams from "./path-params";
@@ -40,6 +40,7 @@ type RouteOptions<
   RequestBodyOutput,
   Req extends Request,
   Res extends Response,
+  ResponseDefinitions extends Record<string, unknown>,
 > = {
   operationId: string,
   method: Method,
@@ -52,7 +53,7 @@ type RouteOptions<
     source: ActionSource<PathParamsOutput, QueryParamsOutput, RequestBodyOutput>,
     request: Req
   ) => Res | Promise<Res>,
-  responses: Record<string, ResponseDefinition>,
+  responses: ResponseCollection<ResponseDefinitions>,
   handleErrors?: (
     errorType: typeof customErrorTypes[number] | "UNKNOWN_ERROR",
     issues?: ZodIssue[]
@@ -64,9 +65,18 @@ type RouteOptions<
 } & (RouteWithBody<RequestBodyInput, RequestBodyOutput> | RouteWithoutBody);
 
 function defineRoute<
-  M extends HttpMethod, PPI, PPO, QPI, QPO, RBI, RBO, MwReq extends Request, MwRes extends Response,
+  M extends HttpMethod,
+  PPI,
+  PPO,
+  QPI,
+  QPO,
+  RBI,
+  RBO,
+  MwReq extends Request,
+  MwRes extends Response,
+  ResDef extends Record<string, unknown>,
 >(input: RouteOptions<
-  M, PPI, PPO, QPI, QPO, RBI, RBO, MwReq, MwRes
+  M, PPI, PPO, QPI, QPO, RBI, RBO, MwReq, MwRes, ResDef
 >) {
   const handler: RouteMethodHandler<PPI, MwReq, MwRes> = async (request, context) => {
     try {

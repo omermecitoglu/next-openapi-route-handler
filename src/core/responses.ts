@@ -1,4 +1,4 @@
-import type { ResponseDefinition } from "~/types/response";
+import type { ResponseCollection, ResponseDefinition } from "~/types/response";
 import { resolveContent } from "./content";
 import type { ResponseObject, ResponsesObject } from "@omer-x/openapi-types/response";
 
@@ -7,13 +7,13 @@ export function addBadRequest(queryParams?: unknown, requestBody?: unknown) {
   return { description: "Bad Request" } as ResponseObject;
 }
 
-export function bundleResponses(collection: Record<string, ResponseDefinition>) {
-  return Object.entries(collection).reduce((result, [key, response]) => {
+export function bundleResponses<Defs extends Record<string, unknown>>(collection: ResponseCollection<Defs>) {
+  return Object.entries(collection).reduce((result, [key, response]: [string, ResponseDefinition<unknown>]) => {
     return {
       ...result,
       [key]: {
         description: response.description,
-        content: resolveContent(response.content, response.isArray),
+        content: resolveContent(response.content, response.isArray, false, response.example),
       } satisfies ResponseObject,
     };
   }, {}) as ResponsesObject;
