@@ -2,19 +2,21 @@ import type { HttpMethod } from "~/types/http";
 import type { FixedRequest } from "~/types/request";
 import { resolveContent } from "./content";
 import { safeParse } from "./zod-error-handler";
+import type { ExampleObject } from "@omer-x/openapi-types/example";
 import type { RequestBodyObject } from "@omer-x/openapi-types/request-body";
 import type { ZodError, ZodType, ZodTypeDef } from "zod";
 
 export function resolveRequestBody<I, O>(
   source?: ZodType<O, ZodTypeDef, I> | string,
   isFormData: boolean = false,
-  customExample?: O,
+  customExample?: NoInfer<O>,
+  customExamples?: Record<string, ExampleObject<NoInfer<O>>>,
 ) {
   if (!source) return undefined;
   return {
     // description: "", // how to fill this?
     required: true,
-    content: resolveContent(source, false, isFormData, customExample),
+    content: resolveContent(source, false, isFormData, customExample, customExamples),
   } as RequestBodyObject;
 }
 
