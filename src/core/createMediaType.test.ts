@@ -33,7 +33,7 @@ describe("createMediaType", () => {
     });
   });
 
-  it("should create a MediaTypeObject with schema and example when example is provided", () => {
+  it("should create a MediaTypeObject with schema and examples when examples are provided", () => {
     expect(createMediaType(mockSchema, undefined, mockExamples)).toStrictEqual({
       schema: mockSchema,
       examples: {
