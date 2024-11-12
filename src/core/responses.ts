@@ -13,7 +13,7 @@ export function bundleResponses<Defs extends Record<string, unknown>>(collection
       ...result,
       [key]: {
         description: response.description,
-        content: resolveContent(response.content, response.isArray, false, response.example),
+        content: resolveContent(response.content, response.isArray, false, response.example, response.examples),
       } satisfies ResponseObject,
     };
   }, {}) as ResponsesObject;
