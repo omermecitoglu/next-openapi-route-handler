@@ -7,6 +7,7 @@ import { resolveParams } from "./params";
 import parsePathParams from "./path-params";
 import { addBadRequest, bundleResponses } from "./responses";
 import parseSearchParams from "./search-params";
+import type { ExampleObject } from "@omer-x/openapi-types/example";
 import type { OperationObject } from "@omer-x/openapi-types/operation";
 import type { ZodIssue, ZodType, ZodTypeDef } from "zod";
 
@@ -18,8 +19,9 @@ type ActionSource<PathParams, QueryParams, RequestBody> = {
 
 type RouteWithoutBody = {
   method: Extract<HttpMethod, "GET" | "DELETE" | "HEAD">,
-  requestBody?: null,
+  requestBody?: undefined,
   requestBodyExample?: undefined,
+  requestBodyExamples?: undefined,
   hasFormData?: boolean,
 };
 
@@ -27,6 +29,7 @@ type RouteWithBody<I, O> = {
   method: Exclude<HttpMethod, "GET" | "DELETE" | "HEAD">,
   requestBody?: ZodType<O, ZodTypeDef, I> | string,
   requestBodyExample?: NoInfer<O>,
+  requestBodyExamples?: Record<string, ExampleObject<NoInfer<O>>>,
   hasFormData?: boolean,
 };
 
@@ -83,7 +86,7 @@ function defineRoute<
       const { searchParams } = new URL(request.url);
       const pathParams = parsePathParams(context?.params, input.pathParams) as PPO;
       const queryParams = parseSearchParams(searchParams, input.queryParams) as QPO;
-      const body = await parseRequestBody(request, input.method, input.requestBody ?? undefined, input.hasFormData) as RBO;
+      const body = await parseRequestBody(request, input.method, input.requestBody, input.hasFormData) as RBO;
       return await input.action({ pathParams, queryParams, body }, request) as MwRes;
     } catch (error) {
       if (input.handleErrors) {
@@ -137,7 +140,7 @@ function defineRoute<
     description: input.description,
     tags: input.tags,
     parameters: parameters.length ? parameters : undefined,
-    requestBody: resolveRequestBody(input.requestBody ?? undefined, input.hasFormData, input.requestBodyExample),
+    requestBody: resolveRequestBody(input.requestBody, input.hasFormData, input.requestBodyExample, input.requestBodyExamples),
     responses: responses,
     security: input.security,
   };
