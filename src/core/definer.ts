@@ -19,10 +19,10 @@ type ActionSource<PathParams, QueryParams, RequestBody> = {
 
 type RouteWithoutBody = {
   method: Extract<HttpMethod, "GET" | "DELETE" | "HEAD">,
-  requestBody?: undefined,
-  requestBodyExample?: undefined,
-  requestBodyExamples?: undefined,
-  hasFormData?: boolean,
+  requestBody?: never,
+  requestBodyExample?: never,
+  requestBodyExamples?: never,
+  hasFormData?: never,
 };
 
 type RouteWithBody<I, O> = {
