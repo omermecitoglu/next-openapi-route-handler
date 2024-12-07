@@ -32,7 +32,7 @@ describe("defineRoute", () => {
     mockAction.mockResolvedValue(new Response("Success"));
 
     const nextJsRouteHandler = route.GET;
-    const response = await nextJsRouteHandler(mockRequest as unknown as Request);
+    const response = await nextJsRouteHandler(mockRequest as unknown as Request, { params: Promise.resolve({}) });
 
     expect(mockAction).toHaveBeenCalledWith({
       pathParams: null,
@@ -67,7 +67,7 @@ describe("defineRoute", () => {
     mockAction.mockResolvedValue(new Response("Created", { status: 201 }));
 
     const nextJsRouteHandler = route.POST;
-    const response = await nextJsRouteHandler(mockRequest as unknown as Request, { params: { id: "123" } });
+    const response = await nextJsRouteHandler(mockRequest as unknown as Request, { params: Promise.resolve({ id: "123" }) });
 
     expect(mockAction).toHaveBeenCalledWith({
       pathParams: { id: "123" },
@@ -101,7 +101,7 @@ describe("defineRoute", () => {
     });
 
     const nextJsRouteHandler = route.POST;
-    const response = await nextJsRouteHandler(mockRequest as unknown as Request);
+    const response = await nextJsRouteHandler(mockRequest as unknown as Request, { params: Promise.resolve({}) });
 
     expect(response).toBeInstanceOf(Response);
     expect(response.status).toBe(400);
@@ -134,7 +134,7 @@ describe("defineRoute", () => {
     });
 
     const nextJsRouteHandler = route.PUT;
-    const response = await nextJsRouteHandler(mockRequest as unknown as Request);
+    const response = await nextJsRouteHandler(mockRequest as unknown as Request, { params: Promise.resolve({}) });
 
     expect(response).toBeInstanceOf(Response);
     expect(response.status).toBe(400);
@@ -162,7 +162,7 @@ describe("defineRoute", () => {
     });
 
     const nextJsRouteHandler = route.GET;
-    const response = await nextJsRouteHandler(mockRequest as unknown as Request);
+    const response = await nextJsRouteHandler(mockRequest as unknown as Request, { params: Promise.resolve({}) });
 
     expect(response).toBeInstanceOf(Response);
     expect(response.status).toBe(500);
@@ -189,7 +189,7 @@ describe("defineRoute", () => {
 
     const invalidParams = {} as unknown as z.infer<typeof pathSchema>;
     const nextJsRouteHandler = route.GET;
-    const response = await nextJsRouteHandler(mockRequest as unknown as Request, { params: invalidParams });
+    const response = await nextJsRouteHandler(mockRequest as unknown as Request, { params: Promise.resolve(invalidParams) });
 
     expect(response).toBeInstanceOf(Response);
     expect(response.status).toBe(404);
@@ -243,7 +243,8 @@ describe("defineRoute", () => {
 
     const nextJsRouteHandler = route.GET;
 
-    await nextJsRouteHandler(mockRequest as unknown as Request);
+    const fakeContext = { params: Promise.resolve(undefined as unknown as { id: string }) }
+    await nextJsRouteHandler(mockRequest as unknown as Request, fakeContext);
 
     expect(console.log).toHaveBeenCalledWith(expect.stringContaining("You tried to add pathParams to a route"));
 
@@ -272,7 +273,7 @@ describe("defineRoute", () => {
 
     const nextJsRouteHandler = route.POST;
 
-    const response = await nextJsRouteHandler(mockRequest as unknown as Request);
+    const response = await nextJsRouteHandler(mockRequest as unknown as Request, { params: Promise.resolve({}) });
     const bodyText = await response.text();
 
     expect(response).toBeInstanceOf(Response);
@@ -305,7 +306,7 @@ describe("defineRoute", () => {
 
     const nextJsRouteHandler = route.GET;
 
-    const response = await nextJsRouteHandler(mockRequest as unknown as Request);
+    const response = await nextJsRouteHandler(mockRequest as unknown as Request, { params: Promise.resolve({}) });
     const bodyText = await response.text();
 
     expect(response).toBeInstanceOf(Response);
@@ -315,7 +316,7 @@ describe("defineRoute", () => {
 
   it("should apply middleware to the route handler", async () => {
     type Handler = RouteMethodHandler<unknown, Request, Response>;
-    const mockMiddleware = jest.fn((handler: Handler) => async (request: Request, context?: { params: unknown }) => {
+    const mockMiddleware = jest.fn((handler: Handler) => async (request: Request, context: { params: Promise<unknown> }) => {
       await Promise.resolve();
       return handler(request, context);
     });
@@ -338,7 +339,7 @@ describe("defineRoute", () => {
     });
 
     const nextJsRouteHandler = route.GET;
-    const response = await nextJsRouteHandler(mockRequest as unknown as Request);
+    const response = await nextJsRouteHandler(mockRequest as unknown as Request, { params: Promise.resolve({}) });
 
     expect(response).toBeInstanceOf(Response);
     expect(response.status).toBe(200);

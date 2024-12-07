@@ -2,12 +2,12 @@ import type { HttpMethod } from "./http";
 import type { OperationObject } from "@omer-x/openapi-types/operation";
 
 type RouteHandlerContext<PathParams> = {
-  params: PathParams,
+  params: Promise<PathParams>,
 };
 
 export type RouteMethodHandler<PathParamsInput, Req, Res> = ((
   request: Req,
-  context?: RouteHandlerContext<PathParamsInput>
+  context: RouteHandlerContext<PathParamsInput>
 ) => Promise<Res>) & {
   apiData?: OperationObject,
 };

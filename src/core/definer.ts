@@ -84,7 +84,8 @@ function defineRoute<
   const handler: RouteMethodHandler<PPI, MwReq, MwRes> = async (request, context) => {
     try {
       const { searchParams } = new URL(request.url);
-      const pathParams = parsePathParams(context?.params, input.pathParams) as PPO;
+      const nextSegmentParams = context ? (await context.params) : undefined
+      const pathParams = parsePathParams(nextSegmentParams, input.pathParams) as PPO;
       const queryParams = parseSearchParams(searchParams, input.queryParams) as QPO;
       const body = await parseRequestBody(request, input.method, input.requestBody, input.hasFormData) as RBO;
       return await input.action({ pathParams, queryParams, body }, request) as MwRes;
