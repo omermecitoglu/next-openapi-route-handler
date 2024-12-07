@@ -49,15 +49,15 @@
     "zod-to-json-schema": "^3.23.5"
   },
   "devDependencies": {
-    "@omer-x/eslint-config": "^2.0.2",
-    "@types/node": "^22.9.0",
-    "eslint": "^9.14.0",
+    "@omer-x/eslint-config": "^2.1.2",
+    "@types/node": "^22.10.1",
+    "eslint": "^9.16.0",
     "semantic-release": "^24.2.0",
     "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2",
-    "ts-unused-exports": "^10.1.0",
+    "ts-unused-exports": "^11.0.1",
     "tsup": "^8.3.5",
-    "typescript": "^5.6.3"
+    "typescript": "^5.7.2"
   },
   "peerDependencies": {
     "@omer-x/openapi-types": "^1",
