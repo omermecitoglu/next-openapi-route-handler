@@ -1,5 +1,3 @@
-import { readFileSync } from "node:fs";
-import { type Plugin } from "esbuild";
 import { defineConfig } from "tsup";
 
 export default defineConfig({
