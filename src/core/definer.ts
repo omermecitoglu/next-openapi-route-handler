@@ -130,11 +130,15 @@ function defineRoute<
   ];
 
   const responses = bundleResponses(input.responses);
-  const response400 = addBadRequest(input.queryParams, input.requestBody);
-  if (response400) {
-    responses["400"] = response400;
+  if (!input.responses["400"]) {
+    const response400 = addBadRequest(input.queryParams, input.requestBody);
+    if (response400) {
+      responses["400"] = response400;
+    }
   }
-  responses["500"] = { description: "Internal Server Error" };
+  if (!input.responses["500"]) {
+    responses["500"] = { description: "Internal Server Error" };
+  }
 
   handler.apiData = {
     operationId: input.operationId,
