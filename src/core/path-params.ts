@@ -11,6 +11,6 @@ export default function parsePathParams<I, O>(source?: I, schema?: ZodType<O, Zo
       // eslint-disable-next-line no-console
       console.log((error as ZodError).issues);
     }
-    throw new Error("PARSE_PATH_PARAMS");
+    throw new Error("PARSE_PATH_PARAMS", { cause: (error as ZodError).issues });
   }
 }
