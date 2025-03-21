@@ -152,7 +152,9 @@ function defineRoute<
   };
 
   if (input.middleware) {
-    return { [input.method]: input.middleware(handler) } as RouteHandler<M, PPI, MwReq, MwRes>;
+    const alteredHandler = input.middleware(handler);
+    alteredHandler.apiData = handler.apiData;
+    return { [input.method]: alteredHandler } as RouteHandler<M, PPI, MwReq, MwRes>;
   }
 
   return { [input.method]: handler } as RouteHandler<M, PPI, MwReq, MwRes>;

@@ -243,7 +243,7 @@ describe("defineRoute", () => {
 
     const nextJsRouteHandler = route.GET;
 
-    const fakeContext = { params: Promise.resolve(undefined as unknown as { id: string }) }
+    const fakeContext = { params: Promise.resolve(undefined as unknown as { id: string }) };
     await nextJsRouteHandler(mockRequest as unknown as Request, fakeContext);
 
     expect(console.log).toHaveBeenCalledWith(expect.stringContaining("You tried to add pathParams to a route"));
