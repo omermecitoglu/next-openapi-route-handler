@@ -46,18 +46,18 @@
     "dev": "tsup --watch"
   },
   "dependencies": {
-    "zod-to-json-schema": "^3.23.5"
+    "zod-to-json-schema": "^3.24.5"
   },
   "devDependencies": {
     "@omer-x/eslint-config": "^2.1.2",
-    "@types/node": "^22.10.1",
-    "eslint": "^9.16.0",
-    "semantic-release": "^24.2.0",
-    "ts-jest": "^29.2.5",
+    "@types/node": "^22.14.1",
+    "eslint": "^9.25.1",
+    "semantic-release": "^24.2.3",
+    "ts-jest": "^29.3.2",
     "ts-node": "^10.9.2",
     "ts-unused-exports": "^11.0.1",
-    "tsup": "^8.3.5",
-    "typescript": "^5.7.2"
+    "tsup": "^8.4.0",
+    "typescript": "^5.8.3"
   },
   "peerDependencies": {
     "@omer-x/openapi-types": "^1",
