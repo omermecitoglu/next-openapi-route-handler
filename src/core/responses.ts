@@ -8,10 +8,13 @@ export function addBadRequest(queryParams?: unknown, requestBody?: unknown) {
 }
 
 export function bundleResponses<Defs extends Record<string, unknown>>(collection: ResponseCollection<Defs>) {
-  return Object.entries(collection).reduce((result, [key, response]: [string, ResponseDefinition<unknown>]) => {
+  return Object.entries(collection).reduce<ResponsesObject>((
+    bundle,
+    [key, response]: [string, ResponseDefinition<unknown>],
+  ) => {
     if (response.content) {
       return {
-        ...result,
+        ...bundle,
         [key]: {
           description: response.description,
           content: resolveContent(response.content, response.isArray, false, response.example, response.examples),
@@ -20,13 +23,18 @@ export function bundleResponses<Defs extends Record<string, unknown>>(collection
     }
     if (response.customContent) {
       return {
-        ...result,
+        ...bundle,
         [key]: {
           description: response.description,
           content: response.customContent,
         } satisfies ResponseObject,
       };
     }
-    return result;
-  }, {}) as ResponsesObject;
+    return {
+      ...bundle,
+      [key]: {
+        description: response.description,
+      } satisfies ResponseObject,
+    };
+  }, {});
 }
