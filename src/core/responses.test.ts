@@ -89,4 +89,34 @@ describe("bundleResponses", () => {
       },
     });
   });
+
+  it("should handle custom content", () => {
+    const result = bundleResponses({
+      200: {
+        description: "Success",
+        customContent: {
+          "application/vnd.openxmlformats-officedocument.presentationml.presentation": {
+            schema: {
+              type: "string",
+              format: "binary",
+            },
+          },
+        },
+      },
+    });
+
+    expect(result).toEqual({
+      200: {
+        description: "Success",
+        content: {
+          "application/vnd.openxmlformats-officedocument.presentationml.presentation": {
+            schema: {
+              type: "string",
+              format: "binary",
+            },
+          },
+        },
+      },
+    });
+  });
 });
