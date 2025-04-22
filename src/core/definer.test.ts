@@ -346,4 +346,62 @@ describe("defineRoute", () => {
     expect(await response.text()).toBe("Middleware success");
     expect(mockMiddleware).toHaveBeenCalled();
   });
+
+  it("should handle undefined context", async () => {
+    const route = defineRoute({
+      operationId: "noContextExample",
+      method: "GET",
+      summary: "No Context Example",
+      description: "Example route without context",
+      tags: ["example"],
+      action: mockAction,
+      responses: {
+        200: { description: "OK" },
+      },
+    });
+
+    mockAction.mockResolvedValue(new Response("Success"));
+
+    const nextJsRouteHandler = route.GET;
+    const response = await nextJsRouteHandler(mockRequest as unknown as Request, undefined as unknown as {
+      params: Promise<unknown>,
+    });
+
+    expect(mockAction).toHaveBeenCalledWith({
+      pathParams: null,
+      queryParams: null,
+      body: null,
+    }, mockRequest);
+
+    expect(response).toBeInstanceOf(Response);
+    expect(response.status).toBe(200);
+  });
+
+  it("should handle null context params", async () => {
+    const route = defineRoute({
+      operationId: "nullParamsExample",
+      method: "GET",
+      summary: "Null Params Example",
+      description: "Example route with null context params",
+      tags: ["example"],
+      action: mockAction,
+      responses: {
+        200: { description: "OK" },
+      },
+    });
+
+    mockAction.mockResolvedValue(new Response("Success"));
+
+    const nextJsRouteHandler = route.GET;
+    const response = await nextJsRouteHandler(mockRequest as unknown as Request, { params: Promise.resolve(null) });
+
+    expect(mockAction).toHaveBeenCalledWith({
+      pathParams: null,
+      queryParams: null,
+      body: null,
+    }, mockRequest);
+
+    expect(response).toBeInstanceOf(Response);
+    expect(response.status).toBe(200);
+  });
 });
