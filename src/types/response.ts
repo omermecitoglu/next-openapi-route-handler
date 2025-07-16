@@ -1,6 +1,6 @@
 import type { ExampleObject } from "@omer-x/openapi-types/example";
 import type { MediaTypeObject } from "@omer-x/openapi-types/media-type";
-import type { ZodType, ZodTypeDef } from "zod";
+import type { ZodType } from "zod";
 
 export type ResponseDefinition<O, I = O> = {
   description: string,
@@ -8,7 +8,7 @@ export type ResponseDefinition<O, I = O> = {
   example?: NoInfer<O>,
   examples?: Record<string, ExampleObject<NoInfer<O>>>,
 } & ({
-  content?: ZodType<O, ZodTypeDef, I> | string,
+  content?: ZodType<O, I> | string,
   customContent?: never,
 } | {
   content?: never,

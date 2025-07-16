@@ -9,7 +9,7 @@ import { addBadRequest, bundleResponses } from "./responses";
 import parseSearchParams from "./search-params";
 import type { ExampleObject } from "@omer-x/openapi-types/example";
 import type { OperationObject } from "@omer-x/openapi-types/operation";
-import type { ZodIssue, ZodType, ZodTypeDef } from "zod";
+import type { ZodIssue, ZodType } from "zod";
 
 type ActionSource<PathParams, QueryParams, RequestBody> = {
   pathParams: PathParams,
@@ -27,7 +27,7 @@ type RouteWithoutBody = {
 
 type RouteWithBody<I, O> = {
   method: Exclude<HttpMethod, "GET" | "DELETE" | "HEAD">,
-  requestBody?: ZodType<O, ZodTypeDef, I> | string,
+  requestBody?: ZodType<O, I> | string,
   requestBodyExample?: NoInfer<O>,
   requestBodyExamples?: Record<string, ExampleObject<NoInfer<O>>>,
   hasFormData?: boolean,
@@ -50,8 +50,8 @@ type RouteOptions<
   summary: string,
   description: string,
   tags: string[],
-  pathParams?: ZodType<PathParamsOutput, ZodTypeDef, PathParamsInput>,
-  queryParams?: ZodType<QueryParamsOutput, ZodTypeDef, QueryParamsInput>,
+  pathParams?: ZodType<PathParamsOutput, PathParamsInput>,
+  queryParams?: ZodType<QueryParamsOutput, QueryParamsInput>,
   action: (
     source: ActionSource<PathParamsOutput, QueryParamsOutput, RequestBodyOutput>,
     request: Req

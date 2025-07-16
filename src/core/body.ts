@@ -4,10 +4,10 @@ import { resolveContent } from "./content";
 import { safeParse } from "./zod-error-handler";
 import type { ExampleObject } from "@omer-x/openapi-types/example";
 import type { RequestBodyObject } from "@omer-x/openapi-types/request-body";
-import type { ZodError, ZodType, ZodTypeDef } from "zod";
+import type { ZodError, ZodType } from "zod";
 
 export function resolveRequestBody<I, O>(
-  source?: ZodType<O, ZodTypeDef, I> | string,
+  source?: ZodType<O, I> | string,
   isFormData: boolean = false,
   customExample?: NoInfer<O>,
   customExamples?: Record<string, ExampleObject<NoInfer<O>>>,
@@ -23,7 +23,7 @@ export function resolveRequestBody<I, O>(
 export async function parseRequestBody<I, O>(
   request: FixedRequest<NoInfer<I>>,
   method: HttpMethod,
-  schema?: ZodType<O, ZodTypeDef, I> | string,
+  schema?: ZodType<O, I> | string,
   isFormData: boolean = false,
 ): Promise<O | null> {
   if (!schema || typeof schema === "string") return null;

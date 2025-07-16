@@ -3,10 +3,10 @@ import createMediaType from "./createMediaType";
 import convertToOpenAPI from "./zod-to-openapi";
 import type { ExampleObject } from "@omer-x/openapi-types/example";
 import type { RequestBodyObject } from "@omer-x/openapi-types/request-body";
-import type { ZodType, ZodTypeDef } from "zod";
+import type { ZodType } from "zod";
 
 export function resolveContent<I, O>(
-  source?: ZodType<O, ZodTypeDef, I> | string,
+  source?: ZodType<O, I> | string,
   isArray: boolean = false,
   isFormData: boolean = false,
   customExample?: NoInfer<O>,
