@@ -1,11 +1,12 @@
 import { convertStringToArray, convertStringToBoolean, convertStringToNumber } from "~/utils/type-conversion";
-import type { ZodType, ZodTypeDef } from "zod";
+import type { ZodType } from "zod";
 
-export function safeParse<I, O>(schema: ZodType<O, ZodTypeDef, I>, input: Record<string, unknown>) {
+export function safeParse<I, O>(schema: ZodType<O, I>, input: Record<string, unknown>) {
   const result = schema.safeParse(input);
   if (!result.success) {
     for (const issue of result.error.issues) {
-      if (issue.code === "invalid_type" && issue.received === "string") {
+      const [key] = issue.path;
+      if (issue.code === "invalid_type" && typeof key === "string" && key in input && typeof input[key] === "string") {
         if (issue.expected === "number") {
           return safeParse(schema, convertStringToNumber(input, issue.path as string[]));
         }

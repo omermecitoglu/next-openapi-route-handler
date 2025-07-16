@@ -45,6 +45,8 @@ describe("resolveContent", () => {
           },
           required: ["name", "age"],
           additionalProperties: false,
+          // @ts-expect-error: @omer-x/openapi-types doesn't have this
+          $schema: "https://json-schema.org/draft/2020-12/schema",
         },
       },
     } satisfies RequestBodyObject["content"];

@@ -26,6 +26,7 @@ describe("resolveRequestBody", () => {
             },
             required: ["name"],
             additionalProperties: false,
+            $schema: "https://json-schema.org/draft/2020-12/schema",
           },
         },
       },
@@ -49,10 +50,12 @@ describe("resolveRequestBody", () => {
               file: {
                 type: "string",
                 format: "binary",
+                contentEncoding: "binary",
               },
             },
             required: ["file"],
             additionalProperties: false,
+            $schema: "https://json-schema.org/draft/2020-12/schema",
           },
         },
       },
@@ -97,7 +100,8 @@ describe("parseRequestBody", () => {
       expect.objectContaining({
         code: "invalid_type",
         expected: "number",
-        received: "undefined",
+        message: "Invalid input: expected number, received undefined",
+        path: ["age"],
       }),
     ]));
 
@@ -130,7 +134,8 @@ describe("parseRequestBody", () => {
       expect.objectContaining({
         code: "invalid_type",
         expected: "number",
-        received: "undefined",
+        message: "Invalid input: expected number, received undefined",
+        path: ["age"],
       }),
     ]));
     consoleSpy.mockRestore();
