@@ -1,4 +1,4 @@
-import { describe, expect, it } from "@jest/globals";
+import { describe, expect, it } from "vitest";
 import { createSchemaRef } from "./openapi-components";
 import type { SchemaObject } from "@omer-x/openapi-types/schema";
 

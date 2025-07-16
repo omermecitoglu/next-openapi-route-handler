@@ -1,4 +1,4 @@
-import { describe, expect, it } from "@jest/globals";
+import { describe, expect, it } from "vitest";
 import z from "zod";
 import { resolveParams } from "./params";
 import type { ParameterObject } from "@omer-x/openapi-types/parameter";

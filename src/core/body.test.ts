@@ -1,7 +1,5 @@
-/* eslint-disable no-console */
-import { describe, expect, it, jest } from "@jest/globals";
+import { describe, expect, it, vi } from "vitest";
 import z from "zod";
-import type { FixedRequest } from "~/types/request";
 import { parseRequestBody, resolveRequestBody } from "./body";
 
 describe("resolveRequestBody", () => {
@@ -68,37 +66,34 @@ describe("parseRequestBody", () => {
     age: z.number(),
   });
 
-  const mockRequest = {
-    json: jest.fn(),
-    formData: jest.fn(),
-  } as unknown as FixedRequest<z.infer<typeof schema>>;
+  const mockRequest = { json: vi.fn(), formData: vi.fn() };
 
   it("should return null if no schema is provided", async () => {
-    const result = await parseRequestBody(mockRequest, "POST");
+    const result = await parseRequestBody(mockRequest as unknown as Request, "POST");
     expect(result).toBeNull();
   });
 
   it("should throw an error if method is GET", async () => {
-    await expect(parseRequestBody(mockRequest, "GET", schema)).rejects.toThrow("GET routes can't have request body");
+    await expect(parseRequestBody(mockRequest as unknown as Request, "GET", schema))
+      .rejects.toThrow("GET routes can't have request body");
   });
 
   it("should parse valid JSON request body", async () => {
-    (mockRequest.json as jest.Mock).mockResolvedValue({ name: "John", age: 30 } as never);
+    mockRequest.json.mockResolvedValue({ name: "John", age: 30 });
 
-    const result = await parseRequestBody(mockRequest, "POST", schema);
+    const result = await parseRequestBody(mockRequest as unknown as Request, "POST", schema);
 
     expect(result).toEqual({ name: "John", age: 30 });
   });
 
   it("should throw an error for invalid JSON request body", async () => {
-    (mockRequest.json as jest.Mock).mockResolvedValue({ name: "John" } as never);
+    mockRequest.json.mockResolvedValue({ name: "John" });
 
-    const originalLog = console.log;
-    console.log = jest.fn();
+    const consoleSpy = vi.spyOn(console, "log").mockImplementation(() => { /* do nothing */ });
 
-    await expect(parseRequestBody(mockRequest, "POST", schema)).rejects.toThrow("PARSE_REQUEST_BODY");
+    await expect(parseRequestBody(mockRequest as unknown as Request, "POST", schema)).rejects.toThrow("PARSE_REQUEST_BODY");
 
-    expect(console.log).toHaveBeenCalledWith(expect.arrayContaining([
+    expect(consoleSpy).toHaveBeenCalledWith(expect.arrayContaining([
       expect.objectContaining({
         code: "invalid_type",
         expected: "number",
@@ -106,7 +101,7 @@ describe("parseRequestBody", () => {
       }),
     ]));
 
-    console.log = originalLog; // Restore original console.log
+    consoleSpy.mockRestore();
   });
 
   it("should parse valid formData request body", async () => {
@@ -114,9 +109,9 @@ describe("parseRequestBody", () => {
     formData.append("name", "John");
     formData.append("age", "30");
 
-    (mockRequest.formData as jest.Mock).mockResolvedValue(formData as never);
+    mockRequest.formData.mockResolvedValue(formData);
 
-    const result = await parseRequestBody(mockRequest, "POST", schema, true);
+    const result = await parseRequestBody(mockRequest as unknown as Request, "POST", schema, true);
 
     expect(result).toEqual({ name: "John", age: 30 });
   });
@@ -125,21 +120,19 @@ describe("parseRequestBody", () => {
     const formData = new FormData();
     formData.append("name", "John");
 
-    (mockRequest.formData as jest.Mock).mockResolvedValue(formData as never);
+    mockRequest.formData.mockResolvedValue(formData);
 
-    const originalLog = console.log;
-    console.log = jest.fn();
+    const consoleSpy = vi.spyOn(console, "log").mockImplementation(() => { /* do nothing */ });
 
-    await expect(parseRequestBody(mockRequest, "POST", schema, true)).rejects.toThrow("PARSE_FORM_DATA");
+    await expect(parseRequestBody(mockRequest as unknown as Request, "POST", schema, true)).rejects.toThrow("PARSE_FORM_DATA");
 
-    expect(console.log).toHaveBeenCalledWith(expect.arrayContaining([
+    expect(consoleSpy).toHaveBeenCalledWith(expect.arrayContaining([
       expect.objectContaining({
         code: "invalid_type",
         expected: "number",
         received: "undefined",
       }),
     ]));
-
-    console.log = originalLog; // Restore original console.log
+    consoleSpy.mockRestore();
   });
 });

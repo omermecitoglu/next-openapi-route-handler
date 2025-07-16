@@ -1,19 +1,18 @@
-/* eslint-disable no-console */
-import { afterEach, describe, expect, it, jest } from "@jest/globals";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import z from "zod";
 import type { RouteMethodHandler } from "~/types/next";
 import defineRoute from "./definer";
 
 describe("defineRoute", () => {
-  const mockAction = jest.fn() as jest.Mock<() => Promise<Response>>;
+  const mockAction = vi.fn();
   const mockRequest = {
     url: "https://example.com/test",
-    json: jest.fn() as jest.Mock<() => Promise<unknown>>,
-    formData: jest.fn() as jest.Mock<() => Promise<FormData>>,
+    json: vi.fn(),
+    formData: vi.fn(),
   };
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it("should handle a route without pathParams and body for GET method", async () => {
@@ -80,8 +79,7 @@ describe("defineRoute", () => {
   });
 
   it("should return 400 on bad request (invalid body)", async () => {
-    const originalLog = console.log;
-    console.log = jest.fn(); // Mock console.log to verify error logging
+    const consoleSpy = vi.spyOn(console, "log").mockImplementation(() => { /* do nothing */ });
 
     const bodySchema = z.object({ name: z.string() });
 
@@ -106,13 +104,12 @@ describe("defineRoute", () => {
     expect(response).toBeInstanceOf(Response);
     expect(response.status).toBe(400);
 
-    expect(console.log).toHaveBeenCalled();
-    console.log = originalLog; // Restore original console.log
+    expect(consoleSpy).toHaveBeenCalled();
+    consoleSpy.mockRestore();
   });
 
   it("should return 400 on bad request (invalid form body)", async () => {
-    const originalLog = console.log;
-    console.log = jest.fn(); // Mock console.log to verify error logging
+    const consoleSpy = vi.spyOn(console, "log").mockImplementation(() => { /* do nothing */ });
 
     const invalidFormData = new FormData();
     mockRequest.formData.mockResolvedValue(invalidFormData);
@@ -138,8 +135,8 @@ describe("defineRoute", () => {
 
     expect(response).toBeInstanceOf(Response);
     expect(response.status).toBe(400);
-    expect(console.log).toHaveBeenCalled();
-    console.log = originalLog; // Restore original console.log
+    expect(consoleSpy).toHaveBeenCalled();
+    consoleSpy.mockRestore();
   });
 
   it("should return 500 on internal server error", async () => {
@@ -169,8 +166,7 @@ describe("defineRoute", () => {
   });
 
   it("should return 404 when pathParams are missing", async () => {
-    const originalLog = console.log;
-    console.log = jest.fn();
+    const consoleSpy = vi.spyOn(console, "log").mockImplementation(() => { /* do nothing */ });
 
     const pathSchema = z.object({ id: z.string() });
 
@@ -193,8 +189,8 @@ describe("defineRoute", () => {
 
     expect(response).toBeInstanceOf(Response);
     expect(response.status).toBe(404);
-    expect(console.log).toHaveBeenCalled();
-    console.log = originalLog; // Restore original console.log
+    expect(consoleSpy).toHaveBeenCalled();
+    consoleSpy.mockRestore();
   });
 
   it("should add 400 Bad Request response if queryParams or requestBody exists", () => {
@@ -225,8 +221,7 @@ describe("defineRoute", () => {
   });
 
   it("should log a message when unnecessary pathParams are provided in non-production environments", async () => {
-    const originalLog = console.log;
-    console.log = jest.fn(); // Mock console.log
+    const consoleSpy = vi.spyOn(console, "log").mockImplementation(() => { /* do nothing */ });
 
     const route = defineRoute({
       operationId: "getExample",
@@ -246,9 +241,8 @@ describe("defineRoute", () => {
     const fakeContext = { params: Promise.resolve(undefined as unknown as { id: string }) };
     await nextJsRouteHandler(mockRequest as unknown as Request, fakeContext);
 
-    expect(console.log).toHaveBeenCalledWith(expect.stringContaining("You tried to add pathParams to a route"));
-
-    console.log = originalLog;
+    expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining("You tried to add pathParams to a route"));
+    consoleSpy.mockRestore();
   });
 
   it("should use custom error handler correctly for an expected error", async () => {
@@ -316,7 +310,7 @@ describe("defineRoute", () => {
 
   it("should apply middleware to the route handler", async () => {
     type Handler = RouteMethodHandler<unknown, Request, Response>;
-    const mockMiddleware = jest.fn((handler: Handler) => async (request: Request, context: { params: Promise<unknown> }) => {
+    const mockMiddleware = vi.fn((handler: Handler) => async (request: Request, context: { params: Promise<unknown> }) => {
       await Promise.resolve();
       return handler(request, context);
     });

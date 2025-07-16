@@ -1,5 +1,4 @@
-/* eslint-disable no-console */
-import { describe, expect, it, jest } from "@jest/globals";
+import { describe, expect, it, vi } from "vitest";
 import z from "zod";
 import parseSearchParams from "./search-params";
 
@@ -26,8 +25,7 @@ describe("parseSearchParams", () => {
   });
 
   it("should throw an error for invalid input according to the schema and log error issues in non-production env", () => {
-    const originalLog = console.log;
-    console.log = jest.fn(); // Mock console.log
+    const consoleSpy = vi.spyOn(console, "log").mockImplementation(() => { /* do nothing */ });
 
     const params = new URLSearchParams();
     params.append("tags", "tag1");
@@ -35,8 +33,8 @@ describe("parseSearchParams", () => {
 
     expect(() => parseSearchParams(params, schema)).toThrow("PARSE_SEARCH_PARAMS");
 
-    expect(console.log).toHaveBeenCalled(); // Check if console.log was called
-    console.log = originalLog; // Restore original console.log
+    expect(consoleSpy).toHaveBeenCalled(); // Check if console.log was called
+    consoleSpy.mockRestore();
   });
 
   it("should handle multiple keys correctly", () => {

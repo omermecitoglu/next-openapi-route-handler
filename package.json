@@ -1,6 +1,6 @@
 {
   "name": "@omer-x/next-openapi-route-handler",
-  "version": "1.5.0",
+  "version": "2.0.0",
   "description": "a Next.js plugin to generate OpenAPI documentation from route handlers",
   "keywords": [
     "next.js",
@@ -40,10 +40,14 @@
     }
   },
   "scripts": {
-    "test": "jest",
-    "prebuild": "ts-unused-exports tsconfig.json --excludePathsFromReport='.config;src/index'",
+    "test": "vitest run --coverage",
+    "test:watch": "vitest --coverage",
     "build": "tsup",
     "dev": "tsup --watch"
+  },
+  "peerDependencies": {
+    "@omer-x/openapi-types": "^1",
+    "zod": "^3"
   },
   "dependencies": {
     "zod-to-json-schema": "^3.24.5"
@@ -51,16 +55,11 @@
   "devDependencies": {
     "@omer-x/eslint-config": "^2.1.2",
     "@types/node": "^22.14.1",
+    "@vitest/coverage-v8": "^3.2.4",
     "eslint": "^9.25.1",
     "semantic-release": "^24.2.3",
-    "ts-jest": "^29.3.2",
-    "ts-node": "^10.9.2",
-    "ts-unused-exports": "^11.0.1",
     "tsup": "^8.4.0",
-    "typescript": "^5.8.3"
-  },
-  "peerDependencies": {
-    "@omer-x/openapi-types": "^1",
-    "zod": "^3"
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4"
   }
 }

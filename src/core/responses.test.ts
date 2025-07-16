@@ -1,4 +1,4 @@
-import { describe, expect, it } from "@jest/globals";
+import { describe, expect, it } from "vitest";
 import type { ResponseCollection } from "~/types/response";
 import { addBadRequest, bundleResponses } from "./responses";
 

@@ -1,4 +1,4 @@
-import { describe, expect, it } from "@jest/globals";
+import { describe, expect, it } from "vitest";
 import { z } from "zod";
 import { resolveContent } from "./content";
 import type { RequestBodyObject } from "@omer-x/openapi-types/request-body";

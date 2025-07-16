@@ -1,5 +1,4 @@
-/* eslint-disable no-console */
-import { describe, expect, it, jest } from "@jest/globals";
+import { describe, expect, it, vi } from "vitest";
 import z from "zod";
 import parsePathParams from "./path-params";
 
@@ -26,14 +25,13 @@ describe("parsePathParams", () => {
   it("should throw an error for invalid path parameters and log issues in non-production environment", () => {
     const schema = z.object({ id: z.number() });
 
-    const originalLog = console.log;
-    console.log = jest.fn(); // Mock console.log to verify error logging
+    const consoleSpy = vi.spyOn(console, "log").mockImplementation(() => { /* do nothing */ });
 
     const invalidPathParams = { id: "abc" } as unknown as z.infer<typeof schema>;
 
     expect(() => parsePathParams(invalidPathParams, schema)).toThrowError("PARSE_PATH_PARAMS");
 
-    expect(console.log).toHaveBeenCalled();
-    console.log = originalLog; // Restore original console.log
+    expect(consoleSpy).toHaveBeenCalled();
+    consoleSpy.mockRestore();
   });
 });
