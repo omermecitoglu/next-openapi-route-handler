@@ -121,7 +121,7 @@ describe("defineRoute", () => {
       description: "Uploads a file to the storage service",
       tags: ["Upload"],
       requestBody: z.object({
-        file: z.instanceof(File).describe("File object to be uploaded"),
+        file: z.file().describe("File object to be uploaded"),
       }),
       hasFormData: true,
       action: mockAction,

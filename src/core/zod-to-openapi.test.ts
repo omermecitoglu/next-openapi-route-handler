@@ -20,6 +20,8 @@ describe("convertToOpenAPI", () => {
       },
       required: ["name", "age"],
       additionalProperties: false,
+      // @ts-expect-error: @omer-x/openapi-types doesn't have this
+      $schema: "https://json-schema.org/draft/2020-12/schema",
     };
 
     expect(openAPISchema).toEqual(expectedSchema);
@@ -33,6 +35,8 @@ describe("convertToOpenAPI", () => {
     const expectedSchema: SchemaObject = {
       type: "array",
       items: { type: "string" },
+      // @ts-expect-error: @omer-x/openapi-types doesn't have this
+      $schema: "https://json-schema.org/draft/2020-12/schema",
     };
 
     expect(openAPISchema).toEqual(expectedSchema);
@@ -63,6 +67,8 @@ describe("convertToOpenAPI", () => {
       },
       required: ["user"],
       additionalProperties: false,
+      // @ts-expect-error: @omer-x/openapi-types doesn't have this
+      $schema: "https://json-schema.org/draft/2020-12/schema",
     };
 
     expect(openAPISchema).toEqual(expectedSchema);
@@ -70,7 +76,7 @@ describe("convertToOpenAPI", () => {
 
   it("should handle file type correctly in an object", () => {
     const zodSchema = z.object({
-      file: z.instanceof(File),
+      file: z.file(),
     });
 
     const openAPISchema = convertToOpenAPI(zodSchema, false);
@@ -81,10 +87,13 @@ describe("convertToOpenAPI", () => {
         file: {
           type: "string",
           format: "binary",
+          contentEncoding: "binary" as unknown as undefined,
         },
       },
       required: ["file"],
       additionalProperties: false,
+      // @ts-expect-error: @omer-x/openapi-types doesn't have this
+      $schema: "https://json-schema.org/draft/2020-12/schema",
     };
 
     expect(openAPISchema).toEqual(expectedSchema);

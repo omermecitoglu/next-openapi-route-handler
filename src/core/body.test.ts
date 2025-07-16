@@ -34,7 +34,7 @@ describe("resolveRequestBody", () => {
 
   it("should handle formData content type", () => {
     const schema = z.object({
-      file: z.instanceof(File),
+      file: z.file(),
     });
 
     const result = resolveRequestBody(schema, true);

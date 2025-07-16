@@ -4,7 +4,7 @@ import { isFile } from "./zod-schema";
 
 describe("isFile", () => {
   it("should return true for a valid file schema", () => {
-    const fileSchema = z.instanceof(File);
+    const fileSchema = z.file();
     const result = isFile(fileSchema);
     expect(result).toBe(true);
   });
