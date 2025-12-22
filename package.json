@@ -40,6 +40,8 @@
     }
   },
   "scripts": {
+    "lint": "eslint --flag unstable_native_nodejs_ts_config",
+    "lint:fix": "eslint --fix --flag unstable_native_nodejs_ts_config",
     "test": "vitest run --coverage",
     "test:watch": "vitest --coverage",
     "build": "tsup",
