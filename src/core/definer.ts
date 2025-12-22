@@ -54,15 +54,15 @@ type RouteOptions<
   queryParams?: ZodType<QueryParamsOutput, QueryParamsInput>,
   action: (
     source: ActionSource<PathParamsOutput, QueryParamsOutput, RequestBodyOutput>,
-    request: Req
+    request: Req,
   ) => Res | Promise<Res>,
   responses: ResponseCollection<ResponseDefinitions>,
   handleErrors?: (
     errorType: typeof customErrorTypes[number] | "UNKNOWN_ERROR",
-    issues?: ZodIssue[]
+    issues?: ZodIssue[],
   ) => Res,
   middleware?: (
-    hander: RouteMethodHandler<PathParamsInput, Req, Res>
+    hander: RouteMethodHandler<PathParamsInput, Req, Res>,
   ) => RouteMethodHandler<PathParamsInput, Req, Res>,
   security?: OperationObject["security"],
 } & (RouteWithBody<RequestBodyInput, RequestBodyOutput> | RouteWithoutBody);

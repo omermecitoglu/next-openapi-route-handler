@@ -7,7 +7,7 @@ type RouteHandlerContext<PathParams> = {
 
 export type RouteMethodHandler<PathParamsInput, Req, Res> = ((
   request: Req,
-  context: RouteHandlerContext<PathParamsInput>
+  context: RouteHandlerContext<PathParamsInput>,
 ) => Promise<Res>) & {
   apiData?: OperationObject,
 };
