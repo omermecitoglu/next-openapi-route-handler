@@ -4,6 +4,9 @@ import type { ZodType } from "zod";
 
 export type ResponseDefinition<O, I = O> = {
   description: string,
+  /**
+   * @deprecated Use `.array()` instead
+   */
   isArray?: boolean,
   example?: NoInfer<O>,
   examples?: Record<string, ExampleObject<NoInfer<O>>>,
