@@ -1,6 +1,6 @@
 import type { Entry } from "~/types/entry";
 import type { MediaTypeObject } from "@omer-x/openapi-types/media-type";
-import type { SchemaObject } from "@omer-x/openapi-types/schema";
+import type { SchemaObject } from "@omer-x/json-schema-types";
 
 export default function createMediaType(
   schema: SchemaObject,

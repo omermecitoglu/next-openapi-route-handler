@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import createMediaType from "./createMediaType";
-import type { SchemaObject } from "@omer-x/openapi-types/schema";
+import type { SchemaObject } from "@omer-x/json-schema-types";
 
 describe("createMediaType", () => {
   const mockSchema: SchemaObject = { type: "string" };

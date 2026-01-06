@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createSchemaRef } from "./openapi-components";
-import type { SchemaObject } from "@omer-x/openapi-types/schema";
+import type { SchemaObject } from "@omer-x/json-schema-types";
 
 describe("createSchemaRef", () => {
   it("should create a schema reference for a single schema", () => {

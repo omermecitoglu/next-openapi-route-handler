@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import z from "zod";
 import convertToOpenAPI from "./zod-to-openapi";
-import type { SchemaObject } from "@omer-x/openapi-types/schema";
+import type { SchemaObject } from "@omer-x/json-schema-types";
 
 describe("convertToOpenAPI", () => {
   it("should convert a simple Zod schema to OpenAPI schema", () => {
@@ -20,7 +20,6 @@ describe("convertToOpenAPI", () => {
       },
       required: ["name", "age"],
       additionalProperties: false,
-      // @ts-expect-error: @omer-x/openapi-types doesn't have this
       $schema: "https://json-schema.org/draft/2020-12/schema",
     };
 
@@ -35,7 +34,6 @@ describe("convertToOpenAPI", () => {
     const expectedSchema: SchemaObject = {
       type: "array",
       items: { type: "string" },
-      // @ts-expect-error: @omer-x/openapi-types doesn't have this
       $schema: "https://json-schema.org/draft/2020-12/schema",
     };
 
@@ -67,7 +65,6 @@ describe("convertToOpenAPI", () => {
       },
       required: ["user"],
       additionalProperties: false,
-      // @ts-expect-error: @omer-x/openapi-types doesn't have this
       $schema: "https://json-schema.org/draft/2020-12/schema",
     };
 
@@ -92,7 +89,6 @@ describe("convertToOpenAPI", () => {
       },
       required: ["file"],
       additionalProperties: false,
-      // @ts-expect-error: @omer-x/openapi-types doesn't have this
       $schema: "https://json-schema.org/draft/2020-12/schema",
     };
 
