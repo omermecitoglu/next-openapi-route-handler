@@ -2,6 +2,7 @@ import { customErrorTypes } from "~/types/error";
 import type { HttpMethod } from "~/types/http";
 import type { RouteHandler, RouteMethodHandler } from "~/types/next";
 import type { FixPathParams } from "~/types/path-params";
+import type { Prettify } from "~/types/prettify";
 import type { ResponseCollection } from "~/types/response";
 import { parseRequestBody, resolveRequestBody } from "./body";
 import { resolveParams } from "./params";
@@ -81,7 +82,7 @@ function defineRoute<
   ResDef extends Record<string, unknown>,
 >(input: RouteOptions<
   M, PPI, PPO, QPI, QPO, RBI, RBO, MwReq, MwRes, ResDef
->): RouteHandler<M, FixPathParams<PPI>, MwReq, MwRes> {
+>): RouteHandler<M, Prettify<FixPathParams<PPI>>, MwReq, MwRes> {
   const handler: RouteMethodHandler<FixPathParams<PPI>, MwReq, MwRes> = async (request, context) => {
     try {
       const { searchParams } = new URL(request.url);
