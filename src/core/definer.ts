@@ -1,6 +1,7 @@
 import { customErrorTypes } from "~/types/error";
 import type { HttpMethod } from "~/types/http";
 import type { RouteHandler, RouteMethodHandler } from "~/types/next";
+import type { FixPathParams } from "~/types/path-params";
 import type { ResponseCollection } from "~/types/response";
 import { parseRequestBody, resolveRequestBody } from "./body";
 import { resolveParams } from "./params";
@@ -62,8 +63,8 @@ type RouteOptions<
     issues?: ZodIssue[],
   ) => Res,
   middleware?: (
-    hander: RouteMethodHandler<PathParamsInput, Req, Res>,
-  ) => RouteMethodHandler<PathParamsInput, Req, Res>,
+    hander: RouteMethodHandler<FixPathParams<PathParamsInput>, Req, Res>,
+  ) => RouteMethodHandler<FixPathParams<PathParamsInput>, Req, Res>,
   security?: OperationObject["security"],
 } & (RouteWithBody<RequestBodyInput, RequestBodyOutput> | RouteWithoutBody);
 
@@ -80,12 +81,12 @@ function defineRoute<
   ResDef extends Record<string, unknown>,
 >(input: RouteOptions<
   M, PPI, PPO, QPI, QPO, RBI, RBO, MwReq, MwRes, ResDef
->) {
-  const handler: RouteMethodHandler<PPI, MwReq, MwRes> = async (request, context) => {
+>): RouteHandler<M, FixPathParams<PPI>, MwReq, MwRes> {
+  const handler: RouteMethodHandler<FixPathParams<PPI>, MwReq, MwRes> = async (request, context) => {
     try {
       const { searchParams } = new URL(request.url);
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-      const nextSegmentParams = context ? (await context.params) : undefined;
+      const nextSegmentParams = context ? (await context.params) as PPI : undefined;
       const pathParams = parsePathParams(nextSegmentParams, input.pathParams) as PPO;
       const queryParams = parseSearchParams(searchParams, input.queryParams) as QPO;
       const body = await parseRequestBody(request, input.method, input.requestBody, input.hasFormData) as RBO;
@@ -154,10 +155,10 @@ function defineRoute<
   if (input.middleware) {
     const alteredHandler = input.middleware(handler);
     alteredHandler.apiData = handler.apiData;
-    return { [input.method]: alteredHandler } as RouteHandler<M, PPI, MwReq, MwRes>;
+    return { [input.method]: alteredHandler } as RouteHandler<M, FixPathParams<PPI>, MwReq, MwRes>;
   }
 
-  return { [input.method]: handler } as RouteHandler<M, PPI, MwReq, MwRes>;
+  return { [input.method]: handler } as RouteHandler<M, FixPathParams<PPI>, MwReq, MwRes>;
 }
 
 export default defineRoute;
