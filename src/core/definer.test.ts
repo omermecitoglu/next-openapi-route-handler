@@ -43,6 +43,46 @@ describe("defineRoute", () => {
     expect(response.status).toBe(200);
   });
 
+  it("should coerce and validate query parameters via Zod schema", async () => {
+    const queryParams = z.object({
+      query: z.string().min(1),
+      sort: z.enum(["latest", "popular"]).optional(),
+      limit: z.coerce.number().int().min(1).max(100).optional(),
+    });
+    const route = defineRoute({
+      operationId: "listItems",
+      method: "GET",
+      summary: "List items",
+      description: "List items with validated query parameters",
+      tags: ["Items"],
+      queryParams,
+      action: mockAction,
+      responses: {
+        200: { description: "Items" },
+      },
+    });
+    const request = {
+      ...mockRequest,
+      url: "https://example.com/api/items?query=openapi&sort=latest&limit=20",
+    };
+
+    mockAction.mockResolvedValue(new Response("Success"));
+
+    const response = await route.GET(request as unknown as Request, { params: Promise.resolve({}) });
+
+    expect(mockAction).toHaveBeenCalledWith({
+      pathParams: null,
+      queryParams: {
+        query: "openapi",
+        sort: "latest",
+        limit: 20,
+      },
+      body: null,
+    }, request);
+    expect(response).toBeInstanceOf(Response);
+    expect(response.status).toBe(200);
+  });
+
   it("should handle a POST route with pathParams and body", async () => {
     const pathSchema = z.object({ id: z.string() });
     const bodySchema = z.object({ name: z.string() });
